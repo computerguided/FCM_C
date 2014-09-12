@@ -16,5 +16,8 @@ typedef struct
 	EvaluationFunction_t pEvaluation;
 } State_t;
 
+#define SET_STATE(s,e) \
+s.pName = #s; \
+s.pEvaluation = e
 
 #endif

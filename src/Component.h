@@ -6,27 +6,28 @@
 #define COMPONENT_H
 
 #include "Types.h"
-#include "StateTransitionTable.h"
-#include "Logical.h"
-#include "MessageQueue.h"
 
-#define SET_STATE(s,e) \
-s.pName = #s; \
-s.pEvaluation = e
+#include "StateTransitionTable.h"
+#include "MessageQueue.h"
+#include "Logical.h"
+#include "Timer.h"
+
 
 typedef struct
 {
 	SttElement_t* pCurrentState;
 	SttElement_t* pTransitions;
 	MessageQueue_t* pMsgQueue;
-	//Logical_t logical;
-	//Timer_t timer;
+	Logical_t logical;
+	Timer_t timer;
 } Component_t;
 
 #define COMPONENT_BASETYPE_FIELDS \
 SttElement_t* pCurrentState; \
 SttElement_t* pTransitions; \
-MessageQueue_t* pMsgQueue
+MessageQueue_t* pMsgQueue; \
+Logical_t logical; \
+Timer_t timer;
 
 #define TRANSITION_FUNCTION(s,i,m) \
 void s##i##m(COMPONENT_TYPE *comp); \

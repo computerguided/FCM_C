@@ -1,10 +1,8 @@
 /*
  ============================================================================
  Name        : FCM_demo.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Author      : Fred Dijkstra - Computerguided Systems B.V.
+ Description : Functional Components Method (FCM) demo.
  ============================================================================
  */
 

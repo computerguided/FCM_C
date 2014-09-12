@@ -4,6 +4,14 @@
 
 #include "StateMachineEngine.h"
 
+// -------------------------------------------------------------------------------------------------
+// -- StateMachineEngine --
+// -------------------------------------------------------------------------------------------------
+// Process the message.
+// - pComp: pointer to the component that received the message.
+// - pInterface: pointer to the interface of the component on which the message is received.
+// - pMsgId: unique message id, i.e. pointer to literal string.
+// -------------------------------------------------------------------------------------------------
 StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterface, char* pMsgId)
 {
 	// -- Find interface --
@@ -35,11 +43,11 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 	{
 		if( ((State_t*)pComp->pCurrentState)->pEvaluation(pComp) )
 		{
-			StateMachineEngine(pComp, pComp->logical, pComp->logical.Yes);
+			StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pYes_id);
 		}
 		else
 		{
-			StateMachineEngine(pComp, pComp->logical, pComp->logical.No);
+			StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pNo_id);
 		}
   }
 

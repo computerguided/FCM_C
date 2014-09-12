@@ -5,18 +5,18 @@
 #include "StateTransitionTable.h"
 
 void CopyTransition(SttElement_t* pFrom, SttElement_t* pTo);
-void AppendNewElement(SttElement_t* pNewElement, SttElement_t* pLastElement);
+void AppendNewEntry(SttElement_t* pNewElement, SttElement_t* pLastElement);
 
 
 
 // -------------------------------------------------------------------------------------------------
-// -- AppendNewElement --
+// -- AppendNewEntry --
 // -------------------------------------------------------------------------------------------------
-// Append a new element to supplied element.
+// Append a new entry to supplied element.
 // - pNewElement: pointer to first element in temporary array of 5-entryType elements.
-// - pLastElement: pointer to the element to which the new element must be attached.
+// - pLastElement: pointer to the element to which the new entry must be attached.
 // -------------------------------------------------------------------------------------------------
-void AppendNewElement(SttElement_t* pNewElement, SttElement_t* pLastElement)
+void AppendNewEntry(SttElement_t* pNewElement, SttElement_t* pLastElement)
 {
 	SttElement_t* p_lastElement = pLastElement;
 
