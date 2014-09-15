@@ -12,9 +12,9 @@
 typedef struct
 {
 	uint32_t systemTime;
-	Interface_t* interface;
+	Interface_t* pInterface;
 	int msgSize;
-	char* msgId;
+	char* pMsgId;
 } Message_t;
 
 typedef struct
@@ -22,29 +22,31 @@ typedef struct
 	Message_t* pMessage;
 	Message_t* pWrite;
 	Message_t* pRead;
-	Message_t* pWrapAround;
+	void* pWrapAround;
 	void* pEnd_of_queue;
 } MessageQueue_t;
 
+
 #define CREATE_MESSAGE_QUEUE(m,s) \
-MessageQueue_t m; \
-MessageQueueElement_t m##_queue[s]; \
-m.pMessage = &m##_queue; \
-m.pMessage = &m##_queue; \
-m.pEnd_of_queue = (void *)(&m##_queue[s-1]+1); \
-m.pWrapAround = m.pEnd_of_queue;
+		static Message_t _##m##_queue[s]; \
+		static MessageQueue_t m = \
+		{ \
+			_##m##_queue, \
+			_##m##_queue, \
+			_##m##_queue, \
+			(void *)(&_##m##_queue[s-1]+1), \
+			(void *)(&_##m##_queue[s-1]+1) \
+		}
 
-#define MESSAGE_SIZE(m) (int)(&m->eom)-(int)(&m->pId)
+#define MESSAGE_SIZE(m) \
+		(int)(&m->eom)-(int)(&m->pMsgId)
 
-void prepare_message(MessageQueue_t* q, void* m, char* pId, int s);
+#define NEXT_MESSAGE(q) \
+		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize); \
+		if( q->pRead == q->pWrapAround ) q->pRead = q->pMessage
 
-#define PREPARE_MESSAGE(i,m) \
-prepare_message(comp.msgQueue, comp.i.m, comp.i.m##_id, MESSAGE_SIZE(comp.i.m))
+void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize);
 
-#define SEND_MESSAGE(i,m) \
-comp->pMsgQueue.pWrite->interface = comp->i.pRemoteInterface; \
-comp->pMsgQueue.pWrite->systemTime = GetSystemTime(); \
-comp->pMsgQueue.pWrite = &comp.pMsgQueue.pWrite->pId + comp->pMsgQueue.pWrite->msgSize; \
-comp->i.m = NULL
+void CopyMessage(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue);
 
 #endif

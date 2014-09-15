@@ -14,8 +14,10 @@
 // -------------------------------------------------------------------------------------------------
 StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterface, char* pMsgId)
 {
+	SttElement_t* pElement;
+
 	// -- Find interface --
-	SttElement_t* pElement = pComp->pCurrentState++;
+	pElement = pComp->pCurrentState++;
 
 	while( pElement->pReference != (void *)pInterface )
 	{
@@ -38,18 +40,19 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 
 	// Go to the next state.
 	pComp->pCurrentState = pElement->pNextElement;
+	pElement = pComp->pCurrentState;
 
-	while( ((State_t*)pComp->pCurrentState)->pEvaluation != NULL )
+	if( ((State_t*)pElement->pReference)->pEvaluation != NULL )
 	{
-		if( ((State_t*)pComp->pCurrentState)->pEvaluation(pComp) )
+		if( ((State_t*)pElement->pReference)->pEvaluation(pComp) )
 		{
-			StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pYes_id);
+			return StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pYes_id);
 		}
 		else
 		{
-			StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pNo_id);
+			return StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pNo_id);
 		}
-  }
+	}
 
-  return SMR_Okay;
+	return SMR_Okay;
 }

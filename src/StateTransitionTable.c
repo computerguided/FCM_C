@@ -36,7 +36,6 @@ void CopyTransition(SttElement_t* pFrom, SttElement_t* pTo)
 	SttElement_t* p_from = pFrom;
 	SttElement_t* p_to = pTo;
 
-
 	for(int i=0; i<5-(int)pTo->referenceType; i++)
 	{
 		*p_to = *p_from;

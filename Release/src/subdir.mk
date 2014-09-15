@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/Component.c \
+../src/Device.c \
 ../src/FCM_demo.c \
 ../src/Logical.c \
 ../src/MessageQueue.c \
@@ -15,6 +16,7 @@ C_SRCS += \
 
 OBJS += \
 ./src/Component.o \
+./src/Device.o \
 ./src/FCM_demo.o \
 ./src/Logical.o \
 ./src/MessageQueue.o \
@@ -25,6 +27,7 @@ OBJS += \
 
 C_DEPS += \
 ./src/Component.d \
+./src/Device.d \
 ./src/FCM_demo.d \
 ./src/Logical.d \
 ./src/MessageQueue.d \

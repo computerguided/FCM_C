@@ -1,3 +1,10 @@
 /Debug
 *.o
 *.d
+
+*.d
+
+Release/FCM_demo
+
+*.d
+/Release

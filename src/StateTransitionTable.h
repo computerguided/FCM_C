@@ -1,12 +1,11 @@
 // -------------------------------------------------------------------------------------------------
-// StateTransition.h
+// StateTransitionTable.h
 // -------------------------------------------------------------------------------------------------
 
 #ifndef STATE_TRANSITION_TABLE_H
 #define STATE_TRANSITION_TABLE_H
 
 #include "Types.h"
-#include "StateTransitionTable.h"
 
 typedef enum
 {
@@ -15,12 +14,13 @@ typedef enum
   Stt_Message,
   Stt_TransitionFunction,
   Stt_NextState
-} SttElementType_t;
+} SttReferenceType_t;
+
 
 typedef struct
 {
 	void* pReference;
-	SttElementType_t referenceType;
+	SttReferenceType_t referenceType;
 	void* pNextElement;
 } SttElement_t;
 
