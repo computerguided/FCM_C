@@ -16,14 +16,13 @@ int main(void)
 {
 	puts("Functional Components Demo\n");
 
-
 	Device_t demoDevice;
 	InitDevice(&demoDevice);
 
 	getchar();
 
 
-	puts("Bye\n");
+	puts("Bye");
 
 	return EXIT_SUCCESS;
 }

@@ -5,6 +5,8 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
+#include <assert.h>
+
 #include "Types.h"
 
 #include "StateTransitionTable.h"
@@ -54,6 +56,9 @@ typedef struct
 			s##i##.m = NULL; \
 		} \
 		void s##i##m(COMPONENT_TYPE *pComp)
+
+#define MESSAGE_CHECK(i,m) \
+		assert( pComp->i.m == NULL )
 
 #define PREPARE_MESSAGE(i,m) \
 		pComp->i.m = PrepareMessage(pComp->pMsgQueue, pComp->i.m##_id, MESSAGE_SIZE(pComp->i.m))
