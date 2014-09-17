@@ -34,13 +34,10 @@ void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize)
 // -------------------------------------------------------------------------------------------------
 void CopyMessage(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 {
-
-	void* pNewMsg;
-
 	while( pSubMsgQueue->pRead != pSubMsgQueue->pWrite )
 	{
 		// Copy message
-		pNewMsg = PrepareMessage(pMainMsgQueue, pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
+		PrepareMessage(pMainMsgQueue, pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 		pMainMsgQueue->pWrite = pSubMsgQueue->pRead;
 
 		memcpy( &pMainMsgQueue->pWrite->pMsgId, &pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
