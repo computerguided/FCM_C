@@ -4,7 +4,7 @@
 // Control interface definition.
 // -------------------------------------------------------------------------------------------------
 
-#ifndef CONTROLL_H
+#ifndef CONTROL_H
 #define CONTROL_H
 
 #include "Types.h"
