@@ -13,7 +13,7 @@
 typedef struct
 {
 	INTERFACE_BASETYPE_FIELDS;
-	MESSAGE_DEF(Timeout);
+	MESSAGE_DEF(TimeoutInd);
 } Timer_t;
 
 

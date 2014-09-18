@@ -20,16 +20,16 @@ typedef struct
 	SttElement_t* pCurrentState;
 	SttElement_t* pTransitions;
 	MessageQueue_t* pMsgQueue;
-	Logical_t logical;
-	Timer_t timer;
+	Logical_t Logical;
+	Timer_t Timer;
 } Component_t;
 
 #define COMPONENT_BASETYPE_FIELDS \
 		SttElement_t* pCurrentState; \
 		SttElement_t* pTransitions; \
 		MessageQueue_t* pMsgQueue; \
-		Logical_t logical; \
-		Timer_t timer;
+		Logical_t Logical; \
+		Timer_t Timer;
 
 typedef void (*TransitionFunction_t)(Component_t*);
 typedef bool (*EvaluationFunction_t)(Component_t*);
@@ -40,23 +40,49 @@ typedef struct
 	EvaluationFunction_t pEvaluation;
 } State_t;
 
+
+// -------------------------------------------------------------------------------------------------
+// Macro in the component initialization.
+// -------------------------------------------------------------------------------------------------
+
 #define SET_STATE(s,e) \
-		s.pName = #s; \
-		s.pEvaluation = e
+		pComp->s.pName = #s; \
+		pComp->s.pEvaluation = e
+
+#define SET_CURRENT_STATE(s) \
+		pComp->pCurrentState = pComp->s
+
 
 // -------------------------------------------------------------------------------------------------
 // Macros to be used for/in transition function.
 // -------------------------------------------------------------------------------------------------
 
 #define TRANSITION_FUNCTION(s,i,m) \
-		void s##i##m(COMPONENT_TYPE* pComp); \
-		void s##i##m##_wrapper(Component_t* pComp) \
+		void s##_##i##_##m(COMPONENT_TYPE* pComp); \
+		void s##_##i##_##m##_wrapper(Component_t* pComp) \
 		{ \
-			s##i##.m = &pComp->pMsgQueue->pRead->id; \
-			s##i##m((COMPONENT_TYPE *)pComp); \
-			s##i##.m = NULL; \
+		  ((COMPONENT_TYPE*)pComp)->i.m = &pComp->pMsgQueue->pRead->pMsgId; \
+		  s##_##i##_##m((COMPONENT_TYPE*)pComp); \
+		  ((COMPONENT_TYPE*)pComp)->i.m = NULL; \
 		} \
-		void s##i##m(COMPONENT_TYPE *pComp)
+		void s##_##i##_##m(COMPONENT_TYPE *pComp)
+
+#define TRANSITION(s,i,m,n) \
+	Transition( \
+			pComp->pTransitions, \
+			&pComp->s, \
+			&pComp->i, \
+			pComp->i.p##m##_id, \
+			s##_##i##_##m##_wrapper, \
+			&pComp->n )
+
+//Transition(
+//		pComp->pTransitions,
+//		&pComp->Idle,
+//		&pComp->Control,
+//		pComp->Control.pRestartInd_id,
+//		Idle_Control_StartInd_wrapper,
+//		&pComp->Running );
 
 #define MESSAGE_CHECK(i,m) \
 		assert( pComp->i.m == NULL )
