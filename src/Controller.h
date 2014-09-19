@@ -17,6 +17,7 @@
 typedef struct
 {
 	COMPONENT_BASETYPE_FIELDS;
+	STT(11*TRANSITION_SIZE); // STT(<number of transitions>*TRANSITION_SIZE);
 
 	// -- Interfaces --
 	Display_t Display;
@@ -30,6 +31,9 @@ typedef struct
 	State_t Collision;
 	State_t GameOver;
 
+	// -- State variables --
+	int position;
+	int speed;
 
 } Controller_t;
 

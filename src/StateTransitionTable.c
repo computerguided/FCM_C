@@ -168,3 +168,4 @@ void SetNextState(SttElement_t* pTable )
 		pTransFuncElement++;
 	}
 }
+

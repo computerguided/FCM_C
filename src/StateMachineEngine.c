@@ -46,11 +46,11 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 	{
 		if( ((State_t*)pElement->pReference)->pEvaluation(pComp) )
 		{
-			return StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pYes_id);
+			return StateMachineEngine(pComp, (Interface_t*)&pComp->Logical, pComp->Logical.pYes_id);
 		}
 		else
 		{
-			return StateMachineEngine(pComp, (Interface_t*)&pComp->logical, pComp->logical.pNo_id);
+			return StateMachineEngine(pComp, (Interface_t*)&pComp->Logical, pComp->Logical.pNo_id);
 		}
 	}
 

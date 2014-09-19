@@ -5,7 +5,6 @@
 
 #include "Controller.h"
 
-
 #undef COMPONENT_TYPE
 #define COMPONENT_TYPE Controller_t
 
@@ -14,73 +13,42 @@
 // Macro: TRANSITION_FUNCTION(<state>,<interface>,<message>)
 // -------------------------------------------------------------------------------------------------
 
+TRANSITION_FUNCTION(1,	Idle,		Control,	StartInd, 	Running){}
+TRANSITION_FUNCTION(2,	Running,	Timer,		TimeoutInd,	Collision){}
+TRANSITION_FUNCTION(3,	Running,	Control,	QuitInd,	Idle){}
+TRANSITION_FUNCTION(4,	Running,	Control,	PauseInd,	Paused){}
+TRANSITION_FUNCTION(5,	Running,	Command,	SpeedInd,	Running){}
+TRANSITION_FUNCTION(6,	Paused,		Control,	PauseInd,	Running){}
+TRANSITION_FUNCTION(7,	Paused,		Control,	QuitInd,	Idle){}
+TRANSITION_FUNCTION(8,	Collision,	Logical,	No,			Running){}
+TRANSITION_FUNCTION(9,	Collision,	Logical,	Yes,		GameOver){}
+TRANSITION_FUNCTION(10,	GameOver,	Control,	QuitInd,	Idle){}
+TRANSITION_FUNCTION(11,	GameOver,	Control,	RestartInd,	Running){}
 
-//Idle -> Running:StartInd
-TRANSITION_FUNCTION(Running,Control,StartInd){}
-
-//Running -> Collision:TimeoutInd
-TRANSITION_FUNCTION(Running,Timer,TimeoutInd){}
-
-//GameOver -> Running:RestartInd
-TRANSITION_FUNCTION(GameOver,Control,RestartInd){}
-
-//Running ->Paused:PauseInd
-TRANSITION_FUNCTION(Running,Control,PauseInd){}
-
-//Paused -> Running:PauseInd
-TRANSITION_FUNCTION(Paused,Control,PauseInd){}
-
-//Collision -> Running:No
-TRANSITION_FUNCTION(Collision,Logical,No){}
-
-//Collision -> GameOver:Yes
-TRANSITION_FUNCTION(Collision,Logical,Yes){}
-
-//GameOver -> Idle:QuitInd
-TRANSITION_FUNCTION(GameOver,Control,QuitInd){}
-
-//Running -> Idle:QuitInd
-TRANSITION_FUNCTION(Running,Control,QuitInd){}
-
-//Paused -> Idle:QuitInd
-
-
-TRANSITION_FUNCTION(Idle,Command,SpeedInd){}
-
-
-
-
-
-
-
-TRANSITION_FUNCTION(Paused,Control,QuitInd){}
-
-
-
-
-
-
-
-
+// -------------------------------------------------------------------------------------------------
+EVALUATION_FUNCTION(Collision)
+{
+	return true;
+}
 
 // -------------------------------------------------------------------------------------------------
 // Controller_init
 // -------------------------------------------------------------------------------------------------
-void Controller_init( Controller_t* pComp )
+void Controller_init(Controller_t* pComp)
 {
-	SET_STATE(Idle,NULL);
-	SET_STATE(Running,NULL);
-	SET_STATE(Paused,NULL);
-	SET_STATE(Collision,NULL);
-	SET_STATE(GameOver,NULL);
+	// -- Set state ids and evaluation functions --
+	SET_STATE(Idle);
+	SET_STATE(Running);
+	SET_STATE(Paused);
+	SET_CHOICEPOINT(Collision);
+	SET_STATE(GameOver);
 
-	SET_CURRENT_STATE(Idle);
+	// -- Initialize state transition table --
+	SET_STT;
+	SET_TRANS_11; //SET_TRANS_<number of transitions>
+	SET_FIRST_STATE(Idle);
 
-	// Set transitions
-	TRANSITION(Idle,Control,StartInd,Running);
-	TRANSITION(Running,Control,StartInd,Running);
-
-
-
+	// -- Initialize state variables --
+	pComp->speed = 5;
+	pComp->position = 40;
 }
-

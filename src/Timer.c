@@ -11,5 +11,5 @@
 // -------------------------------------------------------------------------------------------------
 void Timer_init( Timer_t* pInterface)
 {
-	SET_MESSAGE_ID(Timeout);
+	SET_MESSAGE_ID(TimeoutInd);
 }
