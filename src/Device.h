@@ -10,6 +10,8 @@
 #include "Component.h"
 #include "StateMachineEngine.h"
 
+// The size of the main message queue.
+#define MAIN_MESSAGE_QUEUE_SIZE 100
 
 typedef struct
 {

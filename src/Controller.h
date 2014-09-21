@@ -7,6 +7,7 @@
 #define CONTROLLER_H
 
 
+
 #include "Types.h"
 
 #include "Component.h"
@@ -14,10 +15,13 @@
 #include "Display.h"
 #include "Command.h"
 
+#undef COMPONENT_TYPE
+#define COMPONENT_TYPE Controller_t
+
 typedef struct
 {
 	COMPONENT_BASETYPE_FIELDS;
-	STT(11*TRANSITION_SIZE); // STT(<number of transitions>*TRANSITION_SIZE);
+	STT(11); // STT(<number of transitions>);
 
 	// -- Interfaces --
 	Display_t Display;
@@ -35,7 +39,7 @@ typedef struct
 	int position;
 	int speed;
 
-} Controller_t;
+} COMPONENT_TYPE;
 
 
 #endif

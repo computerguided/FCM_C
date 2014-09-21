@@ -16,25 +16,38 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 {
 	SttElement_t* pElement;
 
+	// By definition, the element at the next index of an element referencing a
+	// state references to an interface.
+
 	// -- Find interface --
 	pElement = pComp->pCurrentState++;
 
 	while( pElement->pReference != (void *)pInterface )
 	{
+		// Shift to the next interface.
 		pElement = pElement->pNextElement;
 		if( pElement == NULL ) return SMR_Unexpexcted_message;
 	}
+
+	// If we're here, the interface was found.
+
+	// By definition, the element at the next index of an element referencing a
+	// interface references to a message.
 
 	// -- Find message --
 	pElement++;
 
 	while( pElement->pReference != (void *)pMsgId )
 	{
+		// Shift to the next message.
 		pElement = pElement->pNextElement;
 		if( pElement == NULL ) return SMR_Unexpexcted_message;
 	}
 
-	// Call the transition function
+	// If we're here, the message was found. By definition, the element at the next index
+	// of an element referencing a message references to an transition-function.
+
+	// Call the transition function (or rather the wrapper).
 	pElement++;
 	((TransitionFunction_t)pElement->pReference)(pComp);
 
@@ -44,6 +57,7 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 
 	if( ((State_t*)pElement->pReference)->pEvaluation != NULL )
 	{
+		// This is a choicepoint, for which the transitions are handled 'outside' the message queue.
 		if( ((State_t*)pElement->pReference)->pEvaluation(pComp) )
 		{
 			return StateMachineEngine(pComp, (Interface_t*)&pComp->Logical, pComp->Logical.pYes_id);
@@ -54,5 +68,6 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 		}
 	}
 
+	// If we're here, the last state was not a choicepoint.
 	return SMR_Okay;
 }

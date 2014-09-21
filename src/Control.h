@@ -10,7 +10,6 @@
 #include "Types.h"
 #include "Interface.h"
 
-
 typedef struct
 {
 	INTERFACE_BASETYPE_FIELDS;
@@ -19,8 +18,5 @@ typedef struct
 	MESSAGE_DEF(RestartInd);
 	MESSAGE_DEF(QuitInd);
 } Control_t;
-
-
-
 
 #endif

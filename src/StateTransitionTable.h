@@ -7,6 +7,7 @@
 
 #include "Types.h"
 
+// -------------------------------------------------------------------------------------------------
 typedef enum
 {
   Stt_State = 0,
@@ -16,7 +17,7 @@ typedef enum
   Stt_NextState
 } SttReferenceType_t;
 
-
+// -------------------------------------------------------------------------------------------------
 typedef struct
 {
 	void* pReference;
@@ -24,8 +25,10 @@ typedef struct
 	void* pNextElement;
 } SttElement_t;
 
-void Transition(SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
+// -------------------------------------------------------------------------------------------------
+void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
 
 #define TRANSITION_SIZE 5
 
+// -------------------------------------------------------------------------------------------------
 #endif

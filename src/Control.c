@@ -5,6 +5,10 @@
 
 #include "Control.h"
 
+// -------------------------------------------------------------------------------------------------
+// Control_init
+// Interface initialization.
+// -------------------------------------------------------------------------------------------------
 void Control_init( Control_t* pInterface)
 {
 	SET_MESSAGE_ID(StartInd);

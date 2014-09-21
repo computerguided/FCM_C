@@ -31,12 +31,22 @@ typedef struct
 		Logical_t Logical; \
 		Timer_t Timer;
 
-#define STT(x) SttElement_t stt[x]
+// -------------------------------------------------------------------------------------------------
+// STT - Macro to define the state transition table.
+// x : the number of transitions.
+// The reason for multiplication of the number of lines by TRANSITION_SIZE is that each transition
+// requires TRANSITION_SIZE elements initially.
+// -------------------------------------------------------------------------------------------------
+#define STT(x) SttElement_t stt[x*TRANSITION_SIZE]
+
+// -------------------------------------------------------------------------------------------------
 #define SET_STT pComp->pTransitions = pComp->stt
 
+// -------------------------------------------------------------------------------------------------
 typedef void (*TransitionFunction_t)(Component_t*);
 typedef bool (*EvaluationFunction_t)(Component_t*);
 
+// -------------------------------------------------------------------------------------------------
 typedef struct
 {
 	char* pName;
@@ -70,7 +80,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		static void _##s##_##i##_##m##_wrapper(Component_t* pComp); \
 		static void _trans_##x(COMPONENT_TYPE* pComp) \
 		{ \
-			Transition( \
+			SetTransition( \
 					pComp->pTransitions, \
 					&pComp->s, \
 					&pComp->i, \

@@ -9,6 +9,7 @@
 #include "Interface.h"
 #include "Utils.h"
 
+// -------------------------------------------------------------------------------------------------
 typedef struct
 {
 	uint32_t systemTime;
@@ -17,6 +18,7 @@ typedef struct
 	char* pMsgId;
 } Message_t;
 
+// -------------------------------------------------------------------------------------------------
 typedef struct
 {
 	Message_t* pMessage;
@@ -27,6 +29,10 @@ typedef struct
 } MessageQueue_t;
 
 
+// -------------------------------------------------------------------------------------------------
+// Create a message queue by first create a static array of messages followed by the
+// message queue administration, setting all the fields.
+// -------------------------------------------------------------------------------------------------
 #define CREATE_MESSAGE_QUEUE(m,s) \
 		static Message_t _##m##_queue[s]; \
 		static MessageQueue_t m = \
@@ -38,15 +44,19 @@ typedef struct
 			(void *)(&_##m##_queue[s-1]+1) \
 		}
 
+// -------------------------------------------------------------------------------------------------
 #define MESSAGE_SIZE(m) \
 		(int)(&m->eom)-(int)(&m->pMsgId)
 
+// -------------------------------------------------------------------------------------------------
 #define NEXT_MESSAGE(q) \
 		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize); \
 		if( q->pRead == q->pWrapAround ) q->pRead = q->pMessage
 
+// -------------------------------------------------------------------------------------------------
 void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize);
 
+// -------------------------------------------------------------------------------------------------
 void CopyMessage(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue);
 
 #endif
