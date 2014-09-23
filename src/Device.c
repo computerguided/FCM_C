@@ -28,7 +28,7 @@ void InitDevice(Device_t *pDevice)
 void ProcessDeviceStep(Device_t* pDevice)
 {
 	// -- Copy messages out of sub message queue(s) --
-	// CopyMessage( pDevice->pSubMsgQueue, pDevice->pMainMsgQueue);
+	// CopyMessages( pDevice->pSubMsgQueue, pDevice->pMainMsgQueue);
 
 	// There is at least one message pending when the read pointer is not equal
 	// to the write pointer.

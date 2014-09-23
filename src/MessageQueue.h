@@ -57,6 +57,6 @@ typedef struct
 void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize);
 
 // -------------------------------------------------------------------------------------------------
-void CopyMessage(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue);
+void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue);
 
 #endif

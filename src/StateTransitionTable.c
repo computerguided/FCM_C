@@ -163,7 +163,7 @@ void SetNextState(SttElement_t* pTable )
 		// -- Loop through interfaces in this state --
 
 		// Point to first interface in this state.
-		pInterface = pState+1;
+		pInterface = pState++;
 		while( pInterface != NULL )
 		{
 			// -- Loop through messages in this interface in this state --
@@ -173,10 +173,10 @@ void SetNextState(SttElement_t* pTable )
 			while( pMessage != NULL )
 			{
 				// Point to transition function of this message.
-				pTransFuncElement = pMessage+1;
+				pTransFuncElement = pMessage++;
 
 				// Set default (i.e. stays like this when dead-state).
-				pNextStateElement = pTransFuncElement+1;
+				pNextStateElement = pTransFuncElement++;
 				pTransFuncElement->pNextElement = pNextStateElement;
 
 				// -- Loop through all states --
