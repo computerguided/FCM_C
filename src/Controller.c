@@ -41,6 +41,12 @@ TRANSITION_FUNCTION(10,	GameOver,	Control,	QuitInd,	Idle)
 TRANSITION_FUNCTION(11,	GameOver,	Control,	RestartInd,	Running)
 {}
 
+
+#undef NUM_TRANSITIONS
+#define NUM_TRANSITIONS 11
+
+// -------------------------------------------------------------------------------------------------
+// Evaluation functions
 // -------------------------------------------------------------------------------------------------
 EVALUATION_FUNCTION(Collision)
 {
@@ -48,21 +54,26 @@ EVALUATION_FUNCTION(Collision)
 }
 
 // -------------------------------------------------------------------------------------------------
-// Controller_init
-// -------------------------------------------------------------------------------------------------
-void Controller_init(Controller_t* pComp)
+void Controller_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 {
-	// -- Set state ids and evaluation functions --
+	// Initialize interfaces.
+	SET_INTERFACE(Display);
+	SET_INTERFACE(Control);
+	SET_INTERFACE(Command);
+
+	// Set states.
 	SET_STATE(Idle);
 	SET_STATE(Running);
 	SET_STATE(Paused);
-	SET_CHOICEPOINT(Collision);
 	SET_STATE(GameOver);
 
-	// -- Initialize state transition table --
-	SET_STT;
-	SET_TRANS_11; //SET_TRANS_<number of transitions>
-	SET_FIRST_STATE(Idle);
+	// Set choicepoints.
+	SET_CHOICEPOINT(Collision);
+
+	// Initialize state transition table.
+	INIT_STT(NUM_TRANSITIONS,Idle);
+
+	SET_MSG_QUEUE(pMsgQueue);
 
 	// -- Initialize state variables --
 	pComp->speed = 5;

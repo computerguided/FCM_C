@@ -1,43 +1,36 @@
 // -------------------------------------------------------------------------------------------------
-// Controller.h
+// CommandHandler.h
 //
 // -------------------------------------------------------------------------------------------------
 
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#ifndef COMMAND_HANDLER_H
+#define COMMAND_HANDLER_H
 
 #include "Types.h"
+
 #include "Component.h"
 #include "Control.h"
-#include "Display.h"
 #include "Command.h"
 
 #undef COMPONENT_TYPE
-#define COMPONENT_TYPE Controller_t
+#define COMPONENT_TYPE CommandHandler_t
 
 typedef struct
 {
 	COMPONENT_BASETYPE_FIELDS;
-	STT(11);
+	STT(1);
 
 	// -- Interfaces --
-	Display_t Display;
 	Control_t Control;
 	Command_t Command;
 
 	// -- States --
 	State_t Idle;
-	State_t Running;
-	State_t Paused;
-	State_t Collision;
-	State_t GameOver;
 
 	// -- State variables --
-	int position;
-	int speed;
 
 } COMPONENT_TYPE;
 
-void Controller_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue);
+void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue);
 
 #endif

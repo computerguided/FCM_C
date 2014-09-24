@@ -29,6 +29,5 @@ typedef struct
 void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
 
 #define TRANSITION_SIZE 5
-
 // -------------------------------------------------------------------------------------------------
 #endif

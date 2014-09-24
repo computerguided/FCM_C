@@ -9,10 +9,11 @@
 // -------------------------------------------------------------------------------------------------
 //
 // -------------------------------------------------------------------------------------------------
+
 void InitDevice(Device_t *pDevice)
 {
 	// -- Construct static message queues --
-	CREATE_MESSAGE_QUEUE(mainMsgQueue, MAIN_MESSAGE_QUEUE_SIZE);
+	CREATE_MESSAGE_QUEUE(mainMsgQueue, 100);
 
 	// Link to device.
 	pDevice->pMainMsgQueue = &mainMsgQueue;

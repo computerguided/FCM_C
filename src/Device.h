@@ -10,9 +10,6 @@
 #include "Component.h"
 #include "StateMachineEngine.h"
 
-// The size of the main message queue.
-#define MAIN_MESSAGE_QUEUE_SIZE 100
-
 typedef struct
 {
 	MessageQueue_t* pMainMsgQueue;
@@ -20,6 +17,5 @@ typedef struct
 
 void InitDevice(Device_t *pDevice);
 void ProcessDeviceStep(Device_t *pDevice);
-
 
 #endif

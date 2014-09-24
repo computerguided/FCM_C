@@ -19,4 +19,6 @@ typedef struct
 	MESSAGE_DEF(QuitInd);
 } Control_t;
 
+void Control_init( Control_t* pInterface);
+
 #endif

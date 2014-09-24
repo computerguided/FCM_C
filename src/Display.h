@@ -18,7 +18,7 @@ typedef struct
 	);
 } Display_t;
 
-
+void Display_init( Display_t* pInterface);
 
 
 #endif

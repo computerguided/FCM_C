@@ -24,6 +24,6 @@ typedef struct
 } Command_t;
 
 
-
+void Command_init(Command_t* pInterface);
 
 #endif

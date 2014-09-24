@@ -15,6 +15,10 @@
 #include "Logical.h"
 #include "Timer.h"
 
+// -------------------------------------------------------------------------------------------------
+// Component basetype
+// -------------------------------------------------------------------------------------------------
+
 typedef struct
 {
 	SttElement_t* pCurrentState;
@@ -29,7 +33,7 @@ typedef struct
 		SttElement_t* pTransitions; \
 		MessageQueue_t* pMsgQueue; \
 		Logical_t Logical; \
-		Timer_t Timer;
+		Timer_t Timer
 
 // -------------------------------------------------------------------------------------------------
 // STT - Macro to define the state transition table.
@@ -38,9 +42,6 @@ typedef struct
 // requires TRANSITION_SIZE elements initially.
 // -------------------------------------------------------------------------------------------------
 #define STT(x) SttElement_t stt[x*TRANSITION_SIZE]
-
-// -------------------------------------------------------------------------------------------------
-#define SET_STT pComp->pTransitions = pComp->stt
 
 // -------------------------------------------------------------------------------------------------
 typedef void (*TransitionFunction_t)(Component_t*);
@@ -56,13 +57,9 @@ typedef struct
 // -------------------------------------------------------------------------------------------------
 void SetFirstState(Component_t* pComp, State_t* pState);
 
-#define SET_FIRST_STATE(s) \
-		SetFirstState((Component_t*)pComp,&pComp->s)
-
 // -------------------------------------------------------------------------------------------------
-// Macro in the component initialization.
+// Macros in the component initialization.
 // -------------------------------------------------------------------------------------------------
-
 
 #define SET_STATE(s) \
 		pComp->s.pName = #s; \
@@ -71,6 +68,18 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 #define SET_CHOICEPOINT(s) \
 		pComp->s.pName = #s; \
 		pComp->s.pEvaluation = s##_wrapper
+
+#define SET_INTERFACE(i) \
+		i##_init(&pComp->i); \
+		pComp->i.pComponent = pComp
+
+#define INIT_STT(x,s) \
+		pComp->pTransitions = pComp->stt; \
+		SET_TRANSITIONS(x); \
+		SetFirstState((Component_t*)pComp,&pComp->s)
+
+#define SET_MSG_QUEUE(m) \
+		pComp->pMsgQueue = m
 
 // -------------------------------------------------------------------------------------------------
 // Macros to be used for/in transition function.
@@ -153,5 +162,8 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 #define SET_TRANS_28 SET_TRANS_27; _trans_28(pComp)
 #define SET_TRANS_29 SET_TRANS_28; _trans_29(pComp)
 #define SET_TRANS_30 SET_TRANS_29; _trans_30(pComp)
+
+#define SET_TRANSITIONS(x) \
+		SET_TRANS_##x
 
 #endif
