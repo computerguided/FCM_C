@@ -30,21 +30,6 @@ typedef struct
 
 
 // -------------------------------------------------------------------------------------------------
-// Create a message queue by first create a static array of messages followed by the
-// message queue administration, setting all the fields.
-// -------------------------------------------------------------------------------------------------
-#define CREATE_MESSAGE_QUEUE(m,s) \
-		static Message_t _##m##_queue[s]; \
-		static MessageQueue_t m = \
-		{ \
-			_##m##_queue, \
-			_##m##_queue, \
-			_##m##_queue, \
-			(void *)(&_##m##_queue[s-1]+1), \
-			(void *)(&_##m##_queue[s-1]+1) \
-		}
-
-// -------------------------------------------------------------------------------------------------
 #define MESSAGE_SIZE(m) \
 		(int)(&m->eom)-(int)(&m->pMsgId)
 
@@ -52,6 +37,9 @@ typedef struct
 #define NEXT_MESSAGE(q) \
 		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize); \
 		if( q->pRead == q->pWrapAround ) q->pRead = q->pMessage
+
+// -------------------------------------------------------------------------------------------------
+void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize );
 
 // -------------------------------------------------------------------------------------------------
 void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize);

@@ -11,7 +11,25 @@
 
 
 // -------------------------------------------------------------------------------------------------
-// -- PrepareMessage --
+// MessageQueue_init
+// -------------------------------------------------------------------------------------------------
+// Initialize the message queue administration.
+// -------------------------------------------------------------------------------------------------
+// - pMsgQueue : pointer to the created message queue administration.
+// - queueSize : the size of the message queue expressed in number of data-less messages.
+// -------------------------------------------------------------------------------------------------
+void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize )
+{
+  pMsgQueue->pMessage = malloc(sizeof(MessageQueue_t)*queueSize);
+  pMsgQueue->pWrite = pMsgQueue->pMessage;
+  pMsgQueue->pRead = pMsgQueue->pWrite;
+  pMsgQueue->pWrapAround = &pMsgQueue->pMessage[queueSize-1]+1;
+  pMsgQueue->pEnd_of_queue = &pMsgQueue->pMessage[queueSize-1]+1;
+}
+
+
+// -------------------------------------------------------------------------------------------------
+// PrepareMessage
 // -------------------------------------------------------------------------------------------------
 //
 // -------------------------------------------------------------------------------------------------

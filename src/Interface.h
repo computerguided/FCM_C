@@ -29,6 +29,11 @@ typedef struct
 #define SET_MESSAGE_ID(m) \
 		pInterface->p##m##_id = #m
 
+// -------------------------------------------------------------------------------------------------
+void ConnectInterfaces(Interface_t* pLeft, Interface_t* pRight);
+
+
+
 #endif
 
 
