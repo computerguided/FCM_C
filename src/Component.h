@@ -127,7 +127,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 #define SEND_MESSAGE(i,m) \
 		pComp->pMsgQueue->pWrite->interface = pComp->i.pRemoteInterface; \
 		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
-		pComp->pMsgQueue->pWrite = &pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize; \
+		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
 		pComp->i.m = NULL;
 
 // -------------------------------------------------------------------------------------------------
@@ -162,6 +162,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 #define SET_TRANS_28 SET_TRANS_27; _trans_28(pComp)
 #define SET_TRANS_29 SET_TRANS_28; _trans_29(pComp)
 #define SET_TRANS_30 SET_TRANS_29; _trans_30(pComp)
+// Extend this when more than 30 transitions.
 
 #define SET_TRANSITIONS(x) \
 		SET_TRANS_##x

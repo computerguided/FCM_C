@@ -31,12 +31,20 @@ void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize )
 // -------------------------------------------------------------------------------------------------
 // PrepareMessage
 // -------------------------------------------------------------------------------------------------
-//
+// Make room for the new message and get the location in the new message in the message queue
+// and set the fields already.
+// -------------------------------------------------------------------------------------------------
+// - pMsgQueue : pointer to the message queue.
+// - pMsgId : message id, implemented as a pointer to a literal string.
+// - msgSize : size of the message.
 // -------------------------------------------------------------------------------------------------
 void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize)
 {
-	if((int)pMsgQueu->pEnd_of_queue-(int)&pMsgQueu->pWrite->pMsgId < msgSize )
+	// Wrap around when there is not enough room.
+	if((address_t)pMsgQueu->pEnd_of_queue-(address_t)&pMsgQueu->pWrite->pMsgId < msgSize )
 	{
+		// Note that when the message is not sent in the transition,
+		// this wrap around is done for nothing.
 		pMsgQueu->pWrapAround = pMsgQueu->pWrite;
 		pMsgQueu->pWrite = pMsgQueu->pMessage;
 	}
@@ -60,6 +68,7 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 	{
 		// -- Copy message --
 
+		// Create room in destination message queue.
 		PrepareMessage(pMainMsgQueue, pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 
 		// Copy the structure
@@ -68,6 +77,11 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 		// Copy the message parameters (includes message id).
 		memcpy( &pMainMsgQueue->pWrite->pMsgId, &pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 
+		// Now 'send' the message by shifting the write-pointer.
+		pMainMsgQueue->pWrite =
+				(void*)((address_t)&pMainMsgQueue->pWrite->pMsgId + pMainMsgQueue->pWrite->msgSize);
+
+		// Message from source message-queue 'handled'.
 		NEXT_MESSAGE(pSubMsgQueue);
 	}
 }

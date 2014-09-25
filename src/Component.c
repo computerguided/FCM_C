@@ -5,11 +5,12 @@
 #include "Component.h"
 
 // -------------------------------------------------------------------------------------------------
-// -- SetFirstState --
+// SetFirstState
 // -------------------------------------------------------------------------------------------------
 // After the state transition table is setup properly, the first state can be set. This is done by
-// looping through the state transition table and find that element that referecenses the specified
+// looping through the state transition table and find that element that references the specified
 // state.
+// -------------------------------------------------------------------------------------------------
 // Parameters:
 // - pComp: pointer to the component.
 // - pState: pointer to the first state.
@@ -23,7 +24,7 @@ void SetFirstState(Component_t* pComp, State_t* pState)
 
 	while( pStateElement != NULL )
 	{
-		if( pStateElement->pReference == (void*)pState )
+		if( (State_t *)pStateElement->pReference == pState )
 		{
 			// Element found that references to the first state.
 			pComp->pCurrentState = pStateElement;

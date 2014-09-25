@@ -1,5 +1,5 @@
 // -------------------------------------------------------------------------------------------------
-// DemoDevice.c
+ // DemoDevice.c
 // -------------------------------------------------------------------------------------------------
 
 #include "DemoDevice.h"
@@ -11,10 +11,11 @@ void DemoDevice_init(DemoDevice_t* pDevice)
 	INIT_MSG_QUEUE(0,10);
 	INIT_MSG_QUEUE(1,10);
 
-	//	Initialize the components.
-	INIT_COMPONENT(Controller);
-	INIT_COMPONENT(CommandHandler);
+	//	Initialize the components (supply index of message queue).
+	INIT_COMPONENT(Controller,0);
+	INIT_COMPONENT(CommandHandler,1);
 
 	//	Connect the interfaces.
 	CONNECT_INTERFACES(Command,CommandHandler,Controller);
+	CONNECT_INTERFACES(Control,CommandHandler,Controller);
 }

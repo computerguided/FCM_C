@@ -27,11 +27,11 @@ bool ProcessMessage(Device_t *pDevice);
 #define INIT_MSG_QUEUE(i,s) \
 		MessageQueue_init(&pDevice->msgQueue[i], s)
 
-#define INIT_COMPONENT(c) \
-		c##_init(&pDevice->c)
+#define INIT_COMPONENT(c,x) \
+		c##_init(&pDevice->c,&pDevice->msgQueue[x])
 
 #define CONNECT_INTERFACES(i,c_left,c_right) \
-		ConnectInterface(&pDevice->c_left.i, &pDevice->c_right.i)
+		ConnectInterfaces((Interface_t*)&pDevice->c_left.i, (Interface_t*)&pDevice->c_right.i)
 
 // -------------------------------------------------------------------------------------------------
 #endif
