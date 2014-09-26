@@ -13,7 +13,9 @@
 typedef struct
 {
 	INTERFACE_BASETYPE_FIELDS;
-	MESSAGE_DEF(TimeoutInd);
+	MESSAGE_DEF(TimeoutInd,
+			uint32_t timerId;
+	);
 } Timer_t;
 
 

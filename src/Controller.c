@@ -57,6 +57,8 @@ EVALUATION_FUNCTION(Collision)
 void Controller_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 {
 	// Initialize interfaces.
+	SET_INTERFACE(Timer);
+	SET_INTERFACE(Logical);
 	SET_INTERFACE(Display);
 	SET_INTERFACE(Control);
 	SET_INTERFACE(Command);

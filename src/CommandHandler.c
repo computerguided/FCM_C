@@ -23,6 +23,8 @@ TRANSITION_FUNCTION(1, Idle, Control, StartInd, Idle)
 void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 {
 	// -- Initialize interfaces --
+	SET_INTERFACE(Timer);
+	SET_INTERFACE(Logical);
 	SET_INTERFACE(Control);
 	SET_INTERFACE(Command);
 
