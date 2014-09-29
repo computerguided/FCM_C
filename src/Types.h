@@ -18,8 +18,6 @@ typedef char bool;
 #define NULL 0
 #endif
 
-//typedef unsigned long int uint32_t;
-
 /*
  * The following type designates an unsigned integer type with the property that any valid pointer
  * to void can be converted to this type, then converted back to a pointer to void,

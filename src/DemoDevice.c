@@ -18,4 +18,7 @@ void DemoDevice_init(DemoDevice_t* pDevice)
 	//	Connect the interfaces.
 	CONNECT_INTERFACES(Command,CommandHandler,Controller);
 	CONNECT_INTERFACES(Control,CommandHandler,Controller);
+
+	// Connect components to the Timer Handler.
+	CONNECT_TIMER(pDevice->Controller,pDevice->TimerHandler);
 }

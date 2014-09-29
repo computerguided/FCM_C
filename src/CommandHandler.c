@@ -5,6 +5,23 @@
 
 #include "CommandHandler.h"
 
+//typedef struct
+//{
+//	COMPONENT_BASETYPE_FIELDS;
+//	STT(1);
+//
+//	// -- Interfaces --
+//	Control_t Control;
+//	Command_t Command;
+//
+//	// -- States --
+//	State_t Idle;
+//
+//	// -- State variables --
+//
+//} CommandHandler_t;
+
+
 // -------------------------------------------------------------------------------------------------
 // Transition functions
 // Macro: TRANSITION_FUNCTION(<state>,<interface>,<message>)

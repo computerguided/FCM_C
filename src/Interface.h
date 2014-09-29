@@ -20,7 +20,7 @@ typedef struct
 #define MESSAGE_DEF(m,...) \
 		struct \
 		{ \
-			char* pId; \
+			char* pMsgId; \
 			__VA_ARGS__ \
 			char eom; \
 		}* m; \
@@ -28,6 +28,10 @@ typedef struct
 
 #define SET_MESSAGE_ID(m) \
 		pInterface->p##m##_id = #m
+
+// -------------------------------------------------------------------------------------------------
+#define MESSAGE_SIZE(m) \
+		(address_t)(&m->eom)-(address_t)(&m->pMsgId)
 
 // -------------------------------------------------------------------------------------------------
 void ConnectInterfaces(Interface_t* pLeft, Interface_t* pRight);

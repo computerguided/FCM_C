@@ -7,9 +7,9 @@
 #define COMMAND_HANDLER_H
 
 #include "Types.h"
-
 #include "Component.h"
 #include "Control.h"
+#include "Display.h"
 #include "Command.h"
 
 #undef COMPONENT_TYPE

@@ -28,11 +28,6 @@ typedef struct
 	void* pEnd_of_queue;
 } MessageQueue_t;
 
-
-// -------------------------------------------------------------------------------------------------
-#define MESSAGE_SIZE(m) \
-		(int)(&m->eom)-(int)(&m->pMsgId)
-
 // -------------------------------------------------------------------------------------------------
 #define NEXT_MESSAGE(q) \
 		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize); \

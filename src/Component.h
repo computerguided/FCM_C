@@ -9,7 +9,6 @@
 #include <assert.h>
 
 #include "Types.h"
-
 #include "StateTransitionTable.h"
 #include "MessageQueue.h"
 #include "Logical.h"
@@ -21,17 +20,17 @@
 
 typedef struct
 {
+	MessageQueue_t* pMsgQueue;
 	SttElement_t* pCurrentState;
 	SttElement_t* pTransitions;
-	MessageQueue_t* pMsgQueue;
 	Logical_t Logical;
 	Timer_t Timer;
 } Component_t;
 
 #define COMPONENT_BASETYPE_FIELDS \
+		MessageQueue_t* pMsgQueue; \
 		SttElement_t* pCurrentState; \
 		SttElement_t* pTransitions; \
-		MessageQueue_t* pMsgQueue; \
 		Logical_t Logical; \
 		Timer_t Timer
 
@@ -104,7 +103,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		  _##s##_##i##_##m((COMPONENT_TYPE*)pComp); \
 		  ((COMPONENT_TYPE*)pComp)->i.m = NULL; \
 		} \
-		static void _##s##_##i##_##m(COMPONENT_TYPE *pComp)
+		static void _##s##_##i##_##m(COMPONENT_TYPE* pComp)
 
 // -------------------------------------------------------------------------------------------------
 
@@ -122,7 +121,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		assert( pComp->i.m == NULL )
 
 #define PREPARE_MESSAGE(i,m) \
-		pComp->i.m = PrepareMessage(pComp->pMsgQueue, pComp->i.m##_id, MESSAGE_SIZE(pComp->i.m))
+		pComp->i.m = PrepareMessage(pComp->pMsgQueue, pComp->i.p##m##_id, MESSAGE_SIZE(pComp->i.m))
 
 #define SEND_MESSAGE(i,m) \
 		pComp->pMsgQueue->pWrite->interface = pComp->i.pRemoteInterface; \
