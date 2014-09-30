@@ -17,7 +17,7 @@ bool ProcessMessage(Device_t* pDevice)
 	  CopyMessages(&pDevice->msgQueue[i], pDevice->msgQueue);
 	}
 
-	bool result;
+	bool result = true;
 	// There is at least one message pending when the read pointer is not equal
 	// to the write pointer.
 	if( pDevice->msgQueue->pRead != pDevice->msgQueue->pWrite )
