@@ -26,11 +26,9 @@ typedef struct
 	MessageQueue_t* pMsgQueue;
 	Timer_t Timer;
 	TimeoutEntry_t timeout[MAX_TIMERS];
-	int numTimeouts;
 	TimeoutEntry_t* pNextTimeout;
 	int nextTimeoutIndex;
-	TimeoutEntry_t* pNextNewTimeout;
-	int newTimeoutIndex;
+	int endIndex;
 	uint64_t currentTime;
 } COMPONENT_TYPE;
 
