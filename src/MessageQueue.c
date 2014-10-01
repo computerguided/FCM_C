@@ -66,22 +66,27 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 	// Check whether there is a message to copy.
 	while( pSubMsgQueue->pRead != pSubMsgQueue->pWrite )
 	{
-		// -- Copy message --
+		if( pSubMsgQueue->pRead->pInterface != NULL ) // Was message deleted?
+		{
+			// -- Copy message --
 
-		// Create room in destination message queue.
-		PrepareMessage(pMainMsgQueue, pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
+			// Create room in destination message queue.
+			PrepareMessage(pMainMsgQueue, pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 
-		// Copy the structure
-		*pMainMsgQueue->pWrite = *pSubMsgQueue->pRead;
+			// Copy the structure
+			*pMainMsgQueue->pWrite = *pSubMsgQueue->pRead;
 
-		// Copy the message parameters (includes message id).
-		memcpy( &pMainMsgQueue->pWrite->pMsgId, &pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
+			// Copy the message parameters (includes message id).
+			memcpy( &pMainMsgQueue->pWrite->pMsgId, &pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 
-		// Now 'send' the message by shifting the write-pointer.
-		pMainMsgQueue->pWrite =
-				(void*)((address_t)&pMainMsgQueue->pWrite->pMsgId + pMainMsgQueue->pWrite->msgSize);
+			// Now 'send' the message by shifting the write-pointer.
+			pMainMsgQueue->pWrite =
+					(void*)((address_t)&pMainMsgQueue->pWrite->pMsgId + pMainMsgQueue->pWrite->msgSize);
+		}
 
 		// Message from source message-queue 'handled'.
 		NEXT_MESSAGE(pSubMsgQueue);
 	}
 }
+
+

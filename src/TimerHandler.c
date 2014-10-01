@@ -5,6 +5,7 @@
 
 #include "TimerHandler.h"
 
+
 // -------------------------------------------------------------------------------------------------
 // TimerHandler_init
 // -------------------------------------------------------------------------------------------------
@@ -43,20 +44,22 @@ void _TimerTick(void* pComponent, int resourceIndex)
 	TimerHandler_t* pComp = pComponent;
 	while( pComp->pNextTimeout->timeout == pComp->currentTime ) // This is why we need to start currentTime at 1.
 	{
-		// -- Timeout! --
+		if( pComp->pNextTimeout->timerId != 0 ) // Timer already cancelled?
+		{
+			// -- Timeout! --
 
-		PREPARE_MESSAGE(Timer,TimeoutInd);
+			PREPARE_MESSAGE(Timer,TimeoutInd);
 
-		// Expand SEND_MESSAGE to determine remote interface explicitly.
-		pComp->Timer.TimeoutInd->timerId = pComp->pNextTimeout->timerId;
-		pComp->pMsgQueue->pWrite->pInterface = (Interface_t*)&pComp->pNextTimeout->pComponent->Timer; // Differs from macro.
-		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime();
-		pComp->pMsgQueue->pWrite = (void*)((address_t)&pComp->pMsgQueue->pWrite->pMsgId
-		+ pComp->pMsgQueue->pWrite->msgSize);
-		pComp->Timer.TimeoutInd = NULL;
+			// Expand SEND_MESSAGE to determine remote interface explicitly.
+			pComp->Timer.TimeoutInd->timerId = pComp->pNextTimeout->timerId;
+			pComp->pMsgQueue->pWrite->pInterface = (Interface_t*)&pComp->pNextTimeout->pComponent->Timer; // Differs from macro.
+			pComp->pMsgQueue->pWrite->systemTime = GetSystemTime();
+			pComp->pMsgQueue->pWrite = (void*)((address_t)&pComp->pMsgQueue->pWrite->pMsgId
+			+ pComp->pMsgQueue->pWrite->msgSize);
+			pComp->Timer.TimeoutInd = NULL;
+		}
 
-		// The timeout entry is 'emptied'.
-		pComp->pNextTimeout->timerId = 0;
+		// The timeout is handled.
 		pComp->pNextTimeout->timeout = 0;
 
 		// The pointer is shifted one index and wraps around when at the end of the array.
@@ -135,8 +138,80 @@ uint32_t InformIn(Component_t *pComp, uint32_t interval )
 	return _timerId;
 }
 
+
 // -------------------------------------------------------------------------------------------------
-void CancelTimer(Component_t *pComp, uint32_t timerid)
+// DeleteTimoutInd
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+bool DeleteTimoutInd(MessageQueue_t* pMsgQueue, Interface_t* pInterface  )
+{
+	Message_t* pMsg = pMsgQueue->pRead;
+
+	while( pMsg != pMsgQueue->pWrite )
+	{
+		if( pMsg->pInterface == pInterface && pMsg->pMsgId == pMsgId )
+		{
+			// Message found, 'delete' it.
+			pMsg->pInterface = NULL;
+			return true;
+		}
+	}
+	return false;
+}
+
+
+// -------------------------------------------------------------------------------------------------
+// CancelTimer
+// -------------------------------------------------------------------------------------------------
+//
+// -------------------------------------------------------------------------------------------------
+void CancelTimer(Component_t* pComp, uint32_t timerId)
 {
 
+	// Get the pointer to the Timer Handler connected to the supplied component.
+	TimerHandler_t* pTimerHandler = ((Interface_t*)pComp->Timer.pRemoteInterface)->pComponent;
+
+	// Find the indicated timer id.
+	int elementIndex = pTimerHandler->nextTimeoutIndex;
+
+	while( elementIndex != pTimerHandler->endIndex )
+	{
+		if( pTimerHandler->timeout[elementIndex].timerId == timerId ) break;
+		if( ++elementIndex == MAX_TIMERS) elementIndex = 0;
+	}
+
+	if( elementIndex == pTimerHandler->endIndex )
+	{
+		// TODO: error handling?
+		return;
+	}
+
+	pTimerHandler->timeout[elementIndex].timerId = 0;
+
+	if( pTimerHandler->timeout[elementIndex].timeout != 0 )
+	{
+		// Properly cancelled.
+		return;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	DeleteTimoutInd(pTimerHandler->pMsgQueue, pComp->Timer);
+	DeleteTimeoutInd(pComp->pMsgQueue, pComp->Timer);
 }
+
+

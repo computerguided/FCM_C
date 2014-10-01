@@ -20,15 +20,21 @@ bool ProcessMessage(Device_t* pDevice)
 	bool result = true;
 	// There is at least one message pending when the read pointer is not equal
 	// to the write pointer.
-	if( pDevice->msgQueue->pRead != pDevice->msgQueue->pWrite )
+	while( pDevice->msgQueue->pRead != pDevice->msgQueue->pWrite )
 	{
-		// Handle pending message by calling the state machine engine and
-		// supplying the component, interface and message.
-		result = (StateMachineEngine(
-				(Component_t*)pDevice->msgQueue->pRead->pInterface->pComponent,
-				pDevice->msgQueue->pRead->pInterface,
-				pDevice->msgQueue->pRead->pMsgId ) != SMR_Okay );
+		if( pDevice->msgQueue->pRead->pInterface != NULL ) // Was message deleted?
+		{
+			// Handle pending message by calling the state machine engine and
+			// supplying the component, interface and message.
+			result = (StateMachineEngine(
+					(Component_t*)pDevice->msgQueue->pRead->pInterface->pComponent,
+					pDevice->msgQueue->pRead->pInterface,
+					pDevice->msgQueue->pRead->pMsgId ) != SMR_Okay );
 
+			NEXT_MESSAGE(pDevice->msgQueue);
+			return result;
+		}
+		// Message was deleted, jump over it.
 		NEXT_MESSAGE(pDevice->msgQueue);
 	}
 
