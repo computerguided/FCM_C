@@ -34,7 +34,6 @@ bool ProcessMessage(Device_t* pDevice)
 			NEXT_MESSAGE(pDevice->msgQueue);
 			return result;
 		}
-		// Message was deleted, jump over it.
 		NEXT_MESSAGE(pDevice->msgQueue);
 	}
 
