@@ -18,7 +18,6 @@
 typedef struct
 {
 	COMPONENT_BASETYPE_FIELDS;
-	STT(11);
 
 	// -- Interfaces --
 	Display_t Display;

@@ -35,14 +35,6 @@ typedef struct
 		Timer_t Timer
 
 // -------------------------------------------------------------------------------------------------
-// STT - Macro to define the state transition table.
-// x : the number of transitions.
-// The reason for multiplication of the number of lines by TRANSITION_SIZE is that each transition
-// requires TRANSITION_SIZE elements initially.
-// -------------------------------------------------------------------------------------------------
-#define STT(x) SttElement_t stt[x*TRANSITION_SIZE]
-
-// -------------------------------------------------------------------------------------------------
 typedef void (*TransitionFunction_t)(Component_t*);
 typedef bool (*EvaluationFunction_t)(Component_t*);
 
@@ -73,9 +65,8 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		pComp->i.pComponent = pComp
 
 #define INIT_STT(x,s) \
-		pComp->pTransitions = pComp->stt; \
 		SET_TRANSITIONS(x); \
-		SetNextState(pComp->stt); \
+		SetNextStates(pComp->pTransitions); \
 		SetFirstState((Component_t*)pComp,&pComp->s)
 
 #define SET_MSG_QUEUE(m) \
@@ -89,7 +80,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		static void _##s##_##i##_##m##_wrapper(Component_t* pComp); \
 		static void _trans_##x(COMPONENT_TYPE* pComp) \
 		{ \
-			SetTransition( \
+			pComp->pTransitions = SetTransition( \
 					x, \
 					pComp->pTransitions, \
 					&pComp->s, \

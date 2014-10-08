@@ -85,7 +85,14 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 		}
 
 		// Message from source message-queue 'handled'.
-		NEXT_MESSAGE(pSubMsgQueue);
+		pSubMsgQueue->pRead =
+				(void *)((address_t)&pSubMsgQueue->pRead->pMsgId+pSubMsgQueue->pRead->msgSize); \
+		if( pSubMsgQueue->pRead == pSubMsgQueue->pWrapAround )
+		{
+			pSubMsgQueue->pRead = pSubMsgQueue->pMessage;
+		}
+
+		///NEXT_MESSAGE(pSubMsgQueue);
 	}
 }
 

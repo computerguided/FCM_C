@@ -24,11 +24,10 @@ typedef struct
 	void* pNextElement;
 } SttElement_t;
 
-void ClearTransitionTable(SttElement_t* pTable, int numElements);
-
 // -------------------------------------------------------------------------------------------------
-void SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
-void SetNextState(SttElement_t* pTable );
+SttElement_t* SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
+
+void SetNextStates(SttElement_t* pTable );
 
 #define TRANSITION_SIZE 5
 // -------------------------------------------------------------------------------------------------

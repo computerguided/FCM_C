@@ -3,44 +3,80 @@
 // -------------------------------------------------------------------------------------------------
 
 #include "StateTransitionTable.h"
+#include <stdlib.h> // For malloc()
 
 // -------------------------------------------------------------------------------------------------
-// Transition
+// CreateTransition
 // -------------------------------------------------------------------------------------------------
-// Add the given transition to the STT.
+// Create a new transition.
+// Returns the pointer to the first SttElement_t of the created transition.
 // -------------------------------------------------------------------------------------------------
-// - index : index of the transition (starts at 1).
-// - pTable: pointer to the STT. Already completely allocated, but empty at the first call.
+// - level : whether the first element is a state, interface or message.
 // - pState: pointer to the state of the transition.
 // - pInterface: pointer to the interface of the transition.
 // - pMsg: pointer to the message of the transition.
 // - pTransFunc: pointer to the transition-function of the transition.
 // - pNextState: pointer to the next state of the transition.
 // -------------------------------------------------------------------------------------------------
-void SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunc, void* pNextState )
+
+SttElement_t* CreateTransition
+(
+		SttReferenceType_t level,
+		void* pState,
+		void* pInterface,
+		void* pMsg,
+		void *pTransFunc,
+		void* pNextState
+)
 {
-	// Create a temporary pointer to the location of the new transition.
-	SttElement_t* newSttEntry = &pTable[(index-1)*TRANSITION_SIZE];
+	int numElements = TRANSITION_SIZE-(int)level;
 
-	newSttEntry[Stt_State].pReference				= pState;
-	newSttEntry[Stt_Interface].pReference			= pInterface;
-	newSttEntry[Stt_Message].pReference				= pMsg;
-	newSttEntry[Stt_TransitionFunction].pReference	= pTransFunc;
-	newSttEntry[Stt_NextState].pReference 			= pNextState;
+	// Create the necessary elements for the new transition.
+	SttElement_t* newSttEntry = malloc(sizeof(SttElement_t)*numElements);
 
-	for(int i=0; i<TRANSITION_SIZE; i++)
-	{
-		newSttEntry[i].pNextElement = NULL;
-	}
+	// -- Set the reference depending on what must be set --
+
+	if( level == Stt_State ) 		newSttEntry[Stt_State].pReference = pState;
+	if( level <= Stt_Interface ) 	newSttEntry[Stt_Interface-level].pReference = pInterface;
+	if( level <= Stt_Message ) 		newSttEntry[Stt_Message-level].pReference = pMsg;
+									newSttEntry[Stt_TransitionFunction-level].pReference = pTransFunc;
+									newSttEntry[Stt_NextState-level].pReference = pNextState;
+
+	for(int i=0; i<numElements; i++) newSttEntry[i].pNextElement = NULL;
+
+	return newSttEntry;
+}
+
+
+// -------------------------------------------------------------------------------------------------
+// Transition
+// -------------------------------------------------------------------------------------------------
+// Add the given transition to the STT.
+// Returns the pointer to the first transition. This is done to be able to allocate the first.
+// -------------------------------------------------------------------------------------------------
+// - index : index of the transition (starts at 1).
+// - pTable: pointer to the first transition, but uninitialized at the first call.
+// - pState: pointer to the state of the transition.
+// - pInterface: pointer to the interface of the transition.
+// - pMsg: pointer to the message of the transition.
+// - pTransFunc: pointer to the transition-function of the transition.
+// - pNextState: pointer to the next state of the transition.
+// -------------------------------------------------------------------------------------------------
+SttElement_t* SetTransition
+(
+		int index,
+		SttElement_t* pTable,
+		void* pState,
+		void* pInterface,
+		void* pMsg,
+		void *pTransFunc,
+		void* pNextState
+)
+{
+	// If this is the first transition.
+	if( index == 1 ) return CreateTransition(Stt_State, pState, pInterface, pMsg, pTransFunc, pNextState );
 
 	SttElement_t* pStateElement = pTable;
-
-	if( index == 1 )
-	{
-		// This is the first transition.
-		return;
-	}
-
 	SttElement_t* pInterfaceElement;
 	SttElement_t* pMsgElement;
 
@@ -69,59 +105,60 @@ void SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterfa
 							// Message found --> double message --> ERROR
 							// Transition not added.
 							// TODO: Handle feedback for this error.
-							return; // Message found.
+							return pTable; // Message found.
 						}
 
 						if( pMsgElement->pNextElement == NULL )
 						{
 							// This was the last message in this state/interface and therefore message
 							// not found, which is how it should be at this point.
-							pMsgElement->pNextElement = &newSttEntry[Stt_Message];
-							return;
+							pMsgElement->pNextElement = CreateTransition(Stt_Message, pState, pInterface, pMsg, pTransFunc, pNextState );
+							return pTable;
 						}
 
 						// Move to consecutive message.
 						pMsgElement = pMsgElement->pNextElement;
 					}
 
-					break; // Interface found.
+					break; // Interface was found.
 				}
 
 				if( pInterfaceElement->pNextElement == NULL )
 				{
 					// This was the last interface in this state and therefore interface not found.
-					pInterfaceElement->pNextElement = &newSttEntry[Stt_Interface];
-					return;
+					pInterfaceElement->pNextElement = CreateTransition(Stt_Interface, pState, pInterface, pMsg, pTransFunc, pNextState );
+					return pTable;
 				}
 
 				// Move to consecutive interface.
 				pInterfaceElement = pInterfaceElement->pNextElement;
 			}
 
-			break; // State found.
+			break; // State was found.
 		}
 
 		if( pStateElement->pNextElement == NULL )
 		{
 			// This was the last state and therefore state not found.
-			pStateElement->pNextElement = &newSttEntry[Stt_State];
-			return;
+			pStateElement->pNextElement = CreateTransition(Stt_State, pState, pInterface, pMsg, pTransFunc, pNextState );
+			return pTable;
 		}
 
 		// Move to consecutive state.
 		pStateElement = pStateElement->pNextElement;
 	}
+	return pTable;
 }
 
 // -------------------------------------------------------------------------------------------------
-// SetNextState
+// SetNextStates
 // -------------------------------------------------------------------------------------------------
 // When all the transitions are added, all 'next-states' are temporarily assumed to be
 // dead-states. This must be corrected for those next-states that are not dead-states.
 // -------------------------------------------------------------------------------------------------
 // - pTable: pointer to the (first element) of the STT.
 // -------------------------------------------------------------------------------------------------
-void SetNextState(SttElement_t* pTable )
+void SetNextStates(SttElement_t* pTable )
 {
 	SttElement_t* pTransFuncElement = pTable;
 	SttElement_t* pStateElement = pTable;

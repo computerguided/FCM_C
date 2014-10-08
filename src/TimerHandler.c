@@ -50,8 +50,11 @@ void _TimerTick(void* pComponent, int resourceIndex)
 
 			PREPARE_MESSAGE(Timer,TimeoutInd);
 
-			// Expand SEND_MESSAGE to determine remote interface explicitly.
+
 			pComp->Timer.TimeoutInd->timerId = pComp->pNextTimeout->timerId;
+
+			// Expand SEND_MESSAGE to determine remote interface explicitly.
+
 			pComp->pMsgQueue->pWrite->pInterface = (Interface_t*)&pComp->pNextTimeout->pComponent->Timer; // Differs from macro.
 			pComp->pMsgQueue->pWrite->systemTime = GetSystemTime();
 			pComp->pMsgQueue->pWrite = (void*)((address_t)&pComp->pMsgQueue->pWrite->pMsgId

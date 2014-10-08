@@ -42,41 +42,38 @@ void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 // -------------------------------------------------------------------------------------------------
 // Messaging function
 // -------------------------------------------------------------------------------------------------
-void Keystroke(void *pComponent, int resourceIndex)
+void Keystroke(void *pComponent, int messageIndex)
 {
 	COMPONENT_TYPE *pComp = pComponent;
 
-	if( resourceIndex == 0 )
-	{
+//	MESSAGE_DEF(StartInd);
+//	MESSAGE_DEF(PauseInd);
+//	MESSAGE_DEF(RestartInd);
+//	MESSAGE_DEF(QuitInd);
 
+
+	switch (messageIndex )
+	{
+	case 1:
 		PREPARE_MESSAGE(Control,StartInd);
+		SEND_MESSAGE(Control,StartInd);
+		break;
 
-		pComp->pMsgQueue->pWrite->pInterface = pComp->Control.pRemoteInterface; \
-		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
-		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
-		pComp->Control.StartInd = NULL;
-	}
-	else if( resourceIndex == 1 )
-	{
+	case 2:
+		PREPARE_MESSAGE(Control,PauseInd);
+		SEND_MESSAGE(Control,PauseInd);
+		break;
+
+	case 3:
+		PREPARE_MESSAGE(Control,RestartInd);
+		SEND_MESSAGE(Control,RestartInd);
+		break;
+
+	case 4:
 		PREPARE_MESSAGE(Control,QuitInd);
-
-		pComp->pMsgQueue->pWrite->pInterface = pComp->Control.pRemoteInterface; \
-		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
-		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
-		pComp->Control.QuitInd = NULL;
+		SEND_MESSAGE(Control,QuitInd);
+		break;
 
 	}
-	else if( resourceIndex == 2 )
-	{
-		PREPARE_MESSAGE(Control,QuitInd);
-
-		pComp->pMsgQueue->pWrite->pInterface = pComp->Control.pRemoteInterface; \
-		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
-		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
-		pComp->Control.QuitInd = NULL;
-
-	}
-
-
 
 }
