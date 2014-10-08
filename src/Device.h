@@ -13,9 +13,13 @@
 
 typedef struct
 {
-  int numMsgQueues;
-  MessageQueue_t* msgQueue;
+	int numMsgQueues;
+	MessageQueue_t* pMsgQueue;
 } Device_t;
+
+#define DEVICE_BASETYPE_FIELDS \
+		int numMsgQueues; \
+		MessageQueue_t* pMsgQueue
 
 // -------------------------------------------------------------------------------------------------
 bool ProcessMessage(Device_t *pDevice);
@@ -32,6 +36,10 @@ bool ProcessMessage(Device_t *pDevice);
 
 #define CONNECT_INTERFACES(i,c_left,c_right) \
 		ConnectInterfaces((Interface_t*)&pDevice->c_left.i, (Interface_t*)&pDevice->c_right.i)
+
+#define CONNECT_TIMER(c,t) \
+		pDevice->c.Timer.pRemoteInterface = (Interface_t *)&pDevice->t.Timer
+
 
 // -------------------------------------------------------------------------------------------------
 #endif

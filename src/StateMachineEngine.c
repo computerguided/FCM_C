@@ -20,7 +20,7 @@ StateMachineResult_t StateMachineEngine(Component_t* pComp, Interface_t* pInterf
 	// state references to an interface.
 
 	// -- Find interface --
-	pElement = pComp->pCurrentState++;
+	pElement = pComp->pCurrentState+1;
 
 	while( pElement->pReference != (void *)pInterface )
 	{

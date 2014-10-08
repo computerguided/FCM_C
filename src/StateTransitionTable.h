@@ -14,19 +14,21 @@ typedef enum
   Stt_Interface,
   Stt_Message,
   Stt_TransitionFunction,
-  Stt_NextState
+  Stt_NextState,
 } SttReferenceType_t;
 
 // -------------------------------------------------------------------------------------------------
 typedef struct
 {
 	void* pReference;
-	SttReferenceType_t referenceType;
 	void* pNextElement;
 } SttElement_t;
 
+void ClearTransitionTable(SttElement_t* pTable, int numElements);
+
 // -------------------------------------------------------------------------------------------------
-void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
+void SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunct, void* pNextState );
+void SetNextState(SttElement_t* pTable );
 
 #define TRANSITION_SIZE 5
 // -------------------------------------------------------------------------------------------------

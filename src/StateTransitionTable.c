@@ -4,50 +4,12 @@
 
 #include "StateTransitionTable.h"
 
-
-// -------------------------------------------------------------------------------------------------
-// CopyTransition
-// -------------------------------------------------------------------------------------------------
-// Copy the 5 elements that together comprise the transition.
-// -------------------------------------------------------------------------------------------------
-// - pFrom: pointer to first element in temporary array of 5-referenceType elements.
-// - pTo: pointer to the first element in the STT where the transition must be copied.
-// -------------------------------------------------------------------------------------------------
-void CopyTransition(SttElement_t* pFrom, SttElement_t* pTo)
-{
-	SttElement_t* p_from = pFrom;
-	SttElement_t* p_to = pTo;
-
-	for(int i=0; i<5-(int)pTo->referenceType; i++)
-	{
-		*p_to = *p_from;
-		p_to++;
-		p_from++;
-	}
-}
-
-// -------------------------------------------------------------------------------------------------
-// AppendNewEntry
-// -------------------------------------------------------------------------------------------------
-// Append a new entry to supplied element.
-// -------------------------------------------------------------------------------------------------
-// - pNewElement: pointer to first element in temporary array of 5-entryType elements.
-// - pLastElement: pointer to the element to which the new entry must be attached.
-// -------------------------------------------------------------------------------------------------
-void AppendNewEntry(SttElement_t* pNewElement, SttElement_t* pLastElement)
-{
-	SttElement_t* p_lastElement = pLastElement;
-
-	p_lastElement->pNextElement = p_lastElement+(5-(int)pLastElement->referenceType);
-	CopyTransition( pNewElement, p_lastElement->pNextElement );
-}
-
-
 // -------------------------------------------------------------------------------------------------
 // Transition
 // -------------------------------------------------------------------------------------------------
 // Add the given transition to the STT.
 // -------------------------------------------------------------------------------------------------
+// - index : index of the transition (starts at 1).
 // - pTable: pointer to the STT. Already completely allocated, but empty at the first call.
 // - pState: pointer to the state of the transition.
 // - pInterface: pointer to the interface of the transition.
@@ -55,20 +17,30 @@ void AppendNewEntry(SttElement_t* pNewElement, SttElement_t* pLastElement)
 // - pTransFunc: pointer to the transition-function of the transition.
 // - pNextState: pointer to the next state of the transition.
 // -------------------------------------------------------------------------------------------------
-void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunc, void* pNextState )
+void SetTransition(int index, SttElement_t* pTable, void* pState, void* pInterface, void* pMsg, void *pTransFunc, void* pNextState )
 {
-	// Create a temporary structure holding the elements referring to the supplied state, interface, message
-	// and next state.
-	SttElement_t newSttEntry[TRANSITION_SIZE] =
+	// Create a temporary pointer to the location of the new transition.
+	SttElement_t* newSttEntry = &pTable[(index-1)*TRANSITION_SIZE];
+
+	newSttEntry[Stt_State].pReference				= pState;
+	newSttEntry[Stt_Interface].pReference			= pInterface;
+	newSttEntry[Stt_Message].pReference				= pMsg;
+	newSttEntry[Stt_TransitionFunction].pReference	= pTransFunc;
+	newSttEntry[Stt_NextState].pReference 			= pNextState;
+
+	for(int i=0; i<TRANSITION_SIZE; i++)
 	{
-			{pState, Stt_State, NULL},
-			{pInterface, Stt_Interface, NULL},
-			{pMsg, Stt_Message, NULL},
-			{pTransFunc, Stt_TransitionFunction, NULL},
-			{pNextState, Stt_NextState, NULL}
-	};
+		newSttEntry[i].pNextElement = NULL;
+	}
 
 	SttElement_t* pStateElement = pTable;
+
+	if( index == 1 )
+	{
+		// This is the first transition.
+		return;
+	}
+
 	SttElement_t* pInterfaceElement;
 	SttElement_t* pMsgElement;
 
@@ -78,7 +50,7 @@ void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* p
 		if( pStateElement->pReference == pState )
 		{
 			// State found, find interface.
-			pInterfaceElement = pStateElement++;
+			pInterfaceElement = pStateElement+1;
 
 			// Loop through the interfaces in the found state.
 			while( pInterfaceElement != NULL )
@@ -86,7 +58,7 @@ void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* p
 				if( pInterfaceElement->pReference == pInterface )
 				{
 					// Interface found.
-					pMsgElement = pInterfaceElement++;
+					pMsgElement = pInterfaceElement+1;
 
 					// Loop through the messages of the found interface to
 					// check whether message not already handled.
@@ -104,7 +76,8 @@ void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* p
 						{
 							// This was the last message in this state/interface and therefore message
 							// not found, which is how it should be at this point.
-							AppendNewEntry( newSttEntry, pMsgElement );
+							pMsgElement->pNextElement = &newSttEntry[Stt_Message];
+							return;
 						}
 
 						// Move to consecutive message.
@@ -117,7 +90,8 @@ void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* p
 				if( pInterfaceElement->pNextElement == NULL )
 				{
 					// This was the last interface in this state and therefore interface not found.
-					AppendNewEntry( newSttEntry, pInterfaceElement );
+					pInterfaceElement->pNextElement = &newSttEntry[Stt_Interface];
+					return;
 				}
 
 				// Move to consecutive interface.
@@ -130,7 +104,8 @@ void SetTransition(SttElement_t* pTable, void* pState, void* pInterface, void* p
 		if( pStateElement->pNextElement == NULL )
 		{
 			// This was the last state and therefore state not found.
-			AppendNewEntry( newSttEntry, pStateElement );
+			pStateElement->pNextElement = &newSttEntry[Stt_State];
+			return;
 		}
 
 		// Move to consecutive state.
@@ -163,20 +138,20 @@ void SetNextState(SttElement_t* pTable )
 		// -- Loop through interfaces in this state --
 
 		// Point to first interface in this state.
-		pInterface = pState++;
+		pInterface = pState+1;
 		while( pInterface != NULL )
 		{
 			// -- Loop through messages in this interface in this state --
 
 			// Point to first message for this interface.
-			pMessage = pInterface++;
+			pMessage = pInterface+1;
 			while( pMessage != NULL )
 			{
 				// Point to transition function of this message.
-				pTransFuncElement = pMessage++;
+				pTransFuncElement = pMessage+1;
 
 				// Set default (i.e. stays like this when dead-state).
-				pNextStateElement = pTransFuncElement++;
+				pNextStateElement = pTransFuncElement+1;
 				pTransFuncElement->pNextElement = pNextStateElement;
 
 				// -- Loop through all states --

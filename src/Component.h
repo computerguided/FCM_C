@@ -65,7 +65,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		pComp->s.pEvaluation = NULL
 
 #define SET_CHOICEPOINT(s) \
-		pComp->s.pName = #s; \
+		pComp->s.pName = #s"?"; \
 		pComp->s.pEvaluation = s##_wrapper
 
 #define SET_INTERFACE(i) \
@@ -75,6 +75,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 #define INIT_STT(x,s) \
 		pComp->pTransitions = pComp->stt; \
 		SET_TRANSITIONS(x); \
+		SetNextState(pComp->stt); \
 		SetFirstState((Component_t*)pComp,&pComp->s)
 
 #define SET_MSG_QUEUE(m) \
@@ -89,6 +90,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		static void _trans_##x(COMPONENT_TYPE* pComp) \
 		{ \
 			SetTransition( \
+					x, \
 					pComp->pTransitions, \
 					&pComp->s, \
 					&pComp->i, \
@@ -100,6 +102,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		static void _##s##_##i##_##m##_wrapper(Component_t* pComp) \
 		{ \
 		  ((COMPONENT_TYPE*)pComp)->i.m = (void *)pComp->pMsgQueue->pRead->pMsgId; \
+		  printf("Transition: %s | %s | %s \n", #s, #i, #m); \
 		  _##s##_##i##_##m((COMPONENT_TYPE*)pComp); \
 		  ((COMPONENT_TYPE*)pComp)->i.m = NULL; \
 		} \
@@ -124,7 +127,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		pComp->i.m = PrepareMessage(pComp->pMsgQueue, pComp->i.p##m##_id, MESSAGE_SIZE(pComp->i.m))
 
 #define SEND_MESSAGE(i,m) \
-		pComp->pMsgQueue->pWrite->interface = pComp->i.pRemoteInterface; \
+		pComp->pMsgQueue->pWrite->pInterface = pComp->i.pRemoteInterface; \
 		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
 		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
 		pComp->i.m = NULL;

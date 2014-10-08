@@ -38,9 +38,4 @@ void TimerHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue);
 uint32_t InformIn(Component_t *pComp, uint32_t interval );
 bool CancelTimer(Component_t *pComp, uint32_t timerid);
 
-
-// Connect the Timer interface of the indicated component to that of the indicated Timer Handler.
-#define CONNECT_TIMER(c,t) \
-		c.Timer.pRemoteInterface = (Interface_t *)&t.Timer
-
 #endif

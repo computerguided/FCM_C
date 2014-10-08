@@ -36,6 +36,6 @@ void SetFirstState(Component_t* pComp, State_t* pState)
 	// End of the table reached.
 
 	// Assert when the state is not found. Probably missing a transition.
-	assert(pComp->pCurrentState == NULL);
+	assert(pComp->pCurrentState != NULL);
 }
 

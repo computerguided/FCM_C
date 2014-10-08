@@ -9,11 +9,13 @@
 
 typedef struct
 {
+	char* pName;
 	void* pRemoteInterface;
 	void* pComponent;
 } Interface_t;
 
 #define INTERFACE_BASETYPE_FIELDS \
+		char* pName; \
 		void* pRemoteInterface; \
 		void* pComponent
 

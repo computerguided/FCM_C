@@ -1,12 +1,13 @@
 // -------------------------------------------------------------------------------------------------
-// Display.c
-// Display interface for the demo device.
+// Async.h
 // -------------------------------------------------------------------------------------------------
 
-#include "Display.h"
+#ifndef ASYNC_H
+#define ASYNC_H
 
-void Display_init( Display_t* pInterface)
-{
-	SET_MESSAGE_ID(DisplayInd);
-	pInterface->pName = "Display";
-}
+
+#include "Types.h"
+
+typedef void (*MessagingFunction_t) (void*,int);
+
+#endif

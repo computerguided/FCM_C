@@ -7,10 +7,12 @@
 #define COMMAND_HANDLER_H
 
 #include "Types.h"
+
+#include "Command.h"
 #include "Component.h"
 #include "Control.h"
 #include "Display.h"
-#include "Command.h"
+
 
 #undef COMPONENT_TYPE
 #define COMPONENT_TYPE CommandHandler_t
@@ -32,5 +34,7 @@ typedef struct
 } COMPONENT_TYPE;
 
 void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue);
+
+void Keystroke(void *pComponent, int resourceIndex);
 
 #endif

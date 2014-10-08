@@ -99,6 +99,7 @@ uint32_t InformIn(Component_t *pComp, uint32_t interval )
 	// 'Create' new timer id.
 	_timerId++;
 
+	// Do not allow a too small interval to prevent problem when this function is preempted (will happen).
 	if( interval < MIN_INTERVAL ) return 0;
 
 	// Determine the timeout value.
