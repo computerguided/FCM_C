@@ -30,14 +30,16 @@ typedef struct
 
 // -------------------------------------------------------------------------------------------------
 #define NEXT_MESSAGE(q) \
-		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize); \
-		if( q->pRead == q->pWrapAround ) q->pRead = q->pMessage
+		q->pRead = (void *)((address_t)&q->pRead->pMsgId+q->pRead->msgSize)
 
 // -------------------------------------------------------------------------------------------------
 void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize );
 
 // -------------------------------------------------------------------------------------------------
 void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize);
+
+// -------------------------------------------------------------------------------------------------
+void SendMessage(MessageQueue_t* pMsgQueue, Interface_t* pInterface );
 
 // -------------------------------------------------------------------------------------------------
 void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue);

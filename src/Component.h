@@ -118,9 +118,7 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		pComp->i.m = PrepareMessage(pComp->pMsgQueue, pComp->i.p##m##_id, MESSAGE_SIZE(pComp->i.m))
 
 #define SEND_MESSAGE(i,m) \
-		pComp->pMsgQueue->pWrite->pInterface = pComp->i.pRemoteInterface; \
-		pComp->pMsgQueue->pWrite->systemTime = GetSystemTime(); \
-		pComp->pMsgQueue->pWrite = (void *)((address_t)&pComp->pMsgQueue->pWrite->pMsgId + pComp->pMsgQueue->pWrite->msgSize); \
+		SendMessage(pComp->pMsgQueue, (Interface_t*)&pComp->i); \
 		pComp->i.m = NULL;
 
 // -------------------------------------------------------------------------------------------------

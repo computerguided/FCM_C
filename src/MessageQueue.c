@@ -20,7 +20,8 @@
 // -------------------------------------------------------------------------------------------------
 void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize )
 {
-  pMsgQueue->pMessage = malloc(sizeof(MessageQueue_t)*queueSize);
+  pMsgQueue->pMessage = malloc(sizeof(Message_t)*queueSize);
+
   pMsgQueue->pWrite = pMsgQueue->pMessage;
   pMsgQueue->pRead = pMsgQueue->pWrite;
   pMsgQueue->pWrapAround = &pMsgQueue->pMessage[queueSize-1]+1;
@@ -38,19 +39,40 @@ void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize )
 // - pMsgId : message id, implemented as a pointer to a literal string.
 // - msgSize : size of the message.
 // -------------------------------------------------------------------------------------------------
-void* PrepareMessage(MessageQueue_t* pMsgQueu, char* pMsgId, int msgSize)
+void* PrepareMessage(MessageQueue_t* pMsgQueue, char* pMsgId, int msgSize)
 {
+
 	// Wrap around when there is not enough room.
-	if((address_t)pMsgQueu->pEnd_of_queue-(address_t)&pMsgQueu->pWrite->pMsgId < msgSize )
+	if( sizeof(Message_t)+msgSize-sizeof(char*) >
+		(address_t)pMsgQueue->pEnd_of_queue-(address_t)pMsgQueue->pWrite)
 	{
 		// Note that when the message is not sent in the transition,
 		// this wrap around is done for nothing.
-		pMsgQueu->pWrapAround = pMsgQueu->pWrite;
-		pMsgQueu->pWrite = pMsgQueu->pMessage;
+		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
+		pMsgQueue->pWrite = pMsgQueue->pMessage;
 	}
-	pMsgQueu->pWrite->pMsgId = pMsgId;
-	pMsgQueu->pWrite->msgSize = msgSize;
-	return &pMsgQueu->pWrite->pMsgId;
+	pMsgQueue->pWrite->pMsgId = pMsgId;
+	pMsgQueue->pWrite->msgSize = msgSize;
+	return &pMsgQueue->pWrite->pMsgId;
+}
+
+// -------------------------------------------------------------------------------------------------
+// SendMessage
+// -------------------------------------------------------------------------------------------------
+// Set the last fields and shift the write-pointer.
+// -------------------------------------------------------------------------------------------------
+// - pMsgQueue : pointer to the message queue.
+// - pInterface : pointer to the interface on which the message is to be sent.
+// -------------------------------------------------------------------------------------------------
+void SendMessage(MessageQueue_t* pMsgQueue, Interface_t* pInterface )
+{
+	pMsgQueue->pWrite->systemTime = GetSystemTime();
+	pMsgQueue->pWrite->pInterface = pInterface->pRemoteInterface;
+	pMsgQueue->pWrite = (void *)((address_t)&pMsgQueue->pWrite->pMsgId + pMsgQueue->pWrite->msgSize);
+	if( (void *)pMsgQueue->pWrite > (void *)pMsgQueue->pWrapAround )
+	{
+		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
+	}
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -66,6 +88,11 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 	// Check whether there is a message to copy.
 	while( pSubMsgQueue->pRead != pSubMsgQueue->pWrite )
 	{
+		if( pSubMsgQueue->pRead == pSubMsgQueue->pWrapAround )
+		{
+			pSubMsgQueue->pRead = pSubMsgQueue->pMessage;
+		}
+
 		if( pSubMsgQueue->pRead->pInterface != NULL ) // Was message deleted?
 		{
 			// -- Copy message --
@@ -86,13 +113,7 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 
 		// Message from source message-queue 'handled'.
 		pSubMsgQueue->pRead =
-				(void *)((address_t)&pSubMsgQueue->pRead->pMsgId+pSubMsgQueue->pRead->msgSize); \
-		if( pSubMsgQueue->pRead == pSubMsgQueue->pWrapAround )
-		{
-			pSubMsgQueue->pRead = pSubMsgQueue->pMessage;
-		}
-
-		///NEXT_MESSAGE(pSubMsgQueue);
+				(void *)((address_t)&pSubMsgQueue->pRead->pMsgId+pSubMsgQueue->pRead->msgSize);
 	}
 }
 

@@ -59,31 +59,37 @@ int main ()
 	// 1.
 	Keystroke(&demoDevice.CommandHandler, Control_StartInd);
 	ProcessMessage((Device_t*)&demoDevice);
+	ProcessMessage((Device_t*)&demoDevice);
 
 	// 2.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
+	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
 	// 3.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
 	ProcessMessage((Device_t*)&demoDevice);
+	ProcessMessage((Device_t*)&demoDevice);
 
 	// 4.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
+	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
 	// 5.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
 	ProcessMessage((Device_t*)&demoDevice);
+	ProcessMessage((Device_t*)&demoDevice);
 
 	// 6.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
+	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
 	// 7.
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
 	ProcessMessage((Device_t*)&demoDevice);
-
+	ProcessMessage((Device_t*)&demoDevice);
 
 	printf("-- Ready --\n");
 

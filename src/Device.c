@@ -14,10 +14,18 @@ bool ProcessMessage(Device_t* pDevice)
 	// -- Copy messages out of sub message queue(s) --
 	for(int i=1;i<pDevice->numMsgQueues;i++)
 	{
-	  CopyMessages(&pDevice->pMsgQueue[i], pDevice->pMsgQueue);
+		if( pDevice->pMsgQueue[i].pRead != pDevice->pMsgQueue[i].pWrite )
+		{
+			// At least one message pending in this sub-queue.
+			CopyMessages(&pDevice->pMsgQueue[i], pDevice->pMsgQueue);
+		}
 	}
 
 	bool result = true;
+
+	// When the read-pointer is at the wrap-around pointer it needs first be shifted.
+	if( pDevice->pMsgQueue->pRead == pDevice->pMsgQueue->pWrapAround ) pDevice->pMsgQueue->pRead = pDevice->pMsgQueue->pMessage;
+
 	// There is at least one message pending when the read pointer is not equal
 	// to the write pointer.
 	while( pDevice->pMsgQueue->pRead != pDevice->pMsgQueue->pWrite )
