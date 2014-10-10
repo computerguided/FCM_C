@@ -55,10 +55,10 @@ void _TimerTick(void* pComponent, int resourceIndex)
 
 			// Expand SEND_MESSAGE to determine remote interface explicitly.
 
-			pComp->pMsgQueue->pWrite->pInterface = (Interface_t*)&pComp->pNextTimeout->pComponent->Timer; // Differs from macro.
 			pComp->pMsgQueue->pWrite->systemTime = GetSystemTime();
-			pComp->pMsgQueue->pWrite = (void*)((address_t)&pComp->pMsgQueue->pWrite->pMsgId
-			+ pComp->pMsgQueue->pWrite->msgSize);
+			pComp->pMsgQueue->pWrite->pInterface = (Interface_t*)&pComp->pNextTimeout->pComponent->Timer; // Differs from macro.
+			ShiftWritePointer(pComp->pMsgQueue);
+
 			pComp->Timer.TimeoutInd = NULL;
 
 			// Delete the timer.

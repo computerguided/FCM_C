@@ -25,6 +25,8 @@ TRANSITION_FUNCTION(4,	Running,	Control,	PauseInd,	Paused)
 }
 TRANSITION_FUNCTION(5,	Running,	Command,	SpeedInd,	Running)
 {
+	MESSAGE_CHECK(Command,SpeedInd);
+	pComp->speed += pComp->Command.SpeedInd->acceleration;
 }
 TRANSITION_FUNCTION(6,	Paused,		Control,	PauseInd,	Running)
 {

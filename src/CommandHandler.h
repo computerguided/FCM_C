@@ -34,6 +34,6 @@ typedef struct
 
 void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue);
 
-void Keystroke(void *pComponent, int messageIndex);
+void Keystroke(void *pComponent, int testMessageIndex);
 
 #endif

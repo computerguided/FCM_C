@@ -14,7 +14,6 @@ typedef enum
   Stt_Interface,
   Stt_Message,
   Stt_TransitionFunction,
-  Stt_NextState,
 } SttReferenceType_t;
 
 // -------------------------------------------------------------------------------------------------
@@ -29,6 +28,6 @@ SttElement_t* SetTransition(int index, SttElement_t* pTable, void* pState, void*
 
 void SetNextStates(SttElement_t* pTable );
 
-#define TRANSITION_SIZE 5
+#define TRANSITION_SIZE 4
 // -------------------------------------------------------------------------------------------------
 #endif

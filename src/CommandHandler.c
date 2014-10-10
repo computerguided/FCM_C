@@ -42,7 +42,7 @@ void CommandHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 // -------------------------------------------------------------------------------------------------
 // Messaging function
 // -------------------------------------------------------------------------------------------------
-void Keystroke(void *pComponent, int messageIndex)
+void Keystroke(void *pComponent, int testMessageIndex)
 {
 	COMPONENT_TYPE *pComp = pComponent;
 
@@ -52,7 +52,7 @@ void Keystroke(void *pComponent, int messageIndex)
 //	MESSAGE_DEF(QuitInd);
 
 
-	switch (messageIndex )
+	switch (testMessageIndex )
 	{
 	case 1:
 		PREPARE_MESSAGE(Control,StartInd);
@@ -71,6 +71,12 @@ void Keystroke(void *pComponent, int messageIndex)
 
 	case 4:
 		PREPARE_MESSAGE(Control,QuitInd);
+		SEND_MESSAGE(Control,QuitInd);
+		break;
+
+	case 5:
+		PREPARE_MESSAGE(Command,SpeedInd);
+		pComp->Command.SpeedInd->acceleration = 99;
 		SEND_MESSAGE(Control,QuitInd);
 		break;
 

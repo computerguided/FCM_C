@@ -40,9 +40,9 @@ SttElement_t* CreateTransition
 	if( level <= Stt_Interface ) 	newSttEntry[Stt_Interface-level].pReference = pInterface;
 	if( level <= Stt_Message ) 		newSttEntry[Stt_Message-level].pReference = pMsg;
 									newSttEntry[Stt_TransitionFunction-level].pReference = pTransFunc;
-									newSttEntry[Stt_NextState-level].pReference = pNextState;
 
 	for(int i=0; i<numElements; i++) newSttEntry[i].pNextElement = NULL;
+	newSttEntry[Stt_TransitionFunction-level].pNextElement = pNextState; // Temp.
 
 	return newSttEntry;
 }
@@ -162,7 +162,6 @@ void SetNextStates(SttElement_t* pTable )
 {
 	SttElement_t* pTransFuncElement = pTable;
 	SttElement_t* pStateElement = pTable;
-	SttElement_t* pNextStateElement;
 
 	SttElement_t* pState = pTable;
 	SttElement_t* pInterface;
@@ -187,24 +186,30 @@ void SetNextStates(SttElement_t* pTable )
 				// Point to transition function of this message.
 				pTransFuncElement = pMessage+1;
 
-				// Set default (i.e. stays like this when dead-state).
-				pNextStateElement = pTransFuncElement+1;
-				pTransFuncElement->pNextElement = pNextStateElement;
-
 				// -- Loop through all states --
 
 				pStateElement = pTable;
 				while( pStateElement != NULL )
 				{
-					if( pStateElement->pReference == pNextStateElement->pReference)
+					if( pStateElement->pReference == pTransFuncElement->pNextElement)
 					{
-						// Elements reference the same state.
+						// State found.
 						pTransFuncElement->pNextElement = pStateElement;
 						break;
 					}
 					// Move to consecutive state.
 					pStateElement = pStateElement->pNextElement;
 				}
+
+				if( pStateElement == NULL )
+				{
+					// State not found.
+					SttElement_t* pNextState = malloc(sizeof(SttElement_t));
+					pNextState->pReference = pTransFuncElement->pNextElement;
+					pNextState->pNextElement = NULL;
+					pTransFuncElement->pNextElement = pNextState;
+				}
+
 				// Move to consecutive message.
 				pMessage = pMessage->pNextElement;
 			}

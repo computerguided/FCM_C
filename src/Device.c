@@ -23,9 +23,6 @@ bool ProcessMessage(Device_t* pDevice)
 
 	bool result = true;
 
-	// When the read-pointer is at the wrap-around pointer it needs first be shifted.
-	if( pDevice->pMsgQueue->pRead == pDevice->pMsgQueue->pWrapAround ) pDevice->pMsgQueue->pRead = pDevice->pMsgQueue->pMessage;
-
 	// There is at least one message pending when the read pointer is not equal
 	// to the write pointer.
 	while( pDevice->pMsgQueue->pRead != pDevice->pMsgQueue->pWrite )
@@ -40,7 +37,7 @@ bool ProcessMessage(Device_t* pDevice)
 					pDevice->pMsgQueue->pRead->pMsgId ) == SMR_Okay );
 
 			NEXT_MESSAGE(pDevice->pMsgQueue);
-			return result;
+			return result; // Handle one message per loop.
 		}
 		NEXT_MESSAGE(pDevice->pMsgQueue);
 	}

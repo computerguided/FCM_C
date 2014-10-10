@@ -50,10 +50,31 @@ void* PrepareMessage(MessageQueue_t* pMsgQueue, char* pMsgId, int msgSize)
 		// this wrap around is done for nothing.
 		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
 		pMsgQueue->pWrite = pMsgQueue->pMessage;
+
+		// Read pointer
+###
+
 	}
 	pMsgQueue->pWrite->pMsgId = pMsgId;
 	pMsgQueue->pWrite->msgSize = msgSize;
 	return &pMsgQueue->pWrite->pMsgId;
+}
+
+// -------------------------------------------------------------------------------------------------
+// ShiftWritePointer
+// -------------------------------------------------------------------------------------------------
+// Shift the write-pointer.
+// -------------------------------------------------------------------------------------------------
+// - pMsgQueue : pointer to the message queue.
+// -------------------------------------------------------------------------------------------------
+void ShiftWritePointer(MessageQueue_t* pMsgQueue)
+{
+	pMsgQueue->pWrite = (void *)((address_t)&pMsgQueue->pWrite->pMsgId + pMsgQueue->pWrite->msgSize);
+	if( (void *)pMsgQueue->pWrite > (void *)pMsgQueue->pWrapAround )
+		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
+	// If the write pointer is now pointing at the end of the queue.
+	if( pMsgQueue->pWrite == pMsgQueue->pEnd_of_queue )
+		pMsgQueue->pWrite = pMsgQueue->pMessage;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -68,11 +89,8 @@ void SendMessage(MessageQueue_t* pMsgQueue, Interface_t* pInterface )
 {
 	pMsgQueue->pWrite->systemTime = GetSystemTime();
 	pMsgQueue->pWrite->pInterface = pInterface->pRemoteInterface;
-	pMsgQueue->pWrite = (void *)((address_t)&pMsgQueue->pWrite->pMsgId + pMsgQueue->pWrite->msgSize);
-	if( (void *)pMsgQueue->pWrite > (void *)pMsgQueue->pWrapAround )
-	{
-		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
-	}
+
+	ShiftWritePointer( pMsgQueue );
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -88,11 +106,6 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 	// Check whether there is a message to copy.
 	while( pSubMsgQueue->pRead != pSubMsgQueue->pWrite )
 	{
-		if( pSubMsgQueue->pRead == pSubMsgQueue->pWrapAround )
-		{
-			pSubMsgQueue->pRead = pSubMsgQueue->pMessage;
-		}
-
 		if( pSubMsgQueue->pRead->pInterface != NULL ) // Was message deleted?
 		{
 			// -- Copy message --
@@ -107,13 +120,11 @@ void CopyMessages(MessageQueue_t* pSubMsgQueue, MessageQueue_t* pMainMsgQueue)
 			memcpy( &pMainMsgQueue->pWrite->pMsgId, &pSubMsgQueue->pRead->pMsgId, pSubMsgQueue->pRead->msgSize);
 
 			// Now 'send' the message by shifting the write-pointer.
-			pMainMsgQueue->pWrite =
-					(void*)((address_t)&pMainMsgQueue->pWrite->pMsgId + pMainMsgQueue->pWrite->msgSize);
+			ShiftWritePointer(pMainMsgQueue);
 		}
 
 		// Message from source message-queue 'handled'.
-		pSubMsgQueue->pRead =
-				(void *)((address_t)&pSubMsgQueue->pRead->pMsgId+pSubMsgQueue->pRead->msgSize);
+		NEXT_MESSAGE(pSubMsgQueue);
 	}
 }
 

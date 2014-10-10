@@ -35,8 +35,10 @@ typedef enum
   Control_StartInd = 1,
   Control_PauseInd,
   Control_RestartInd,
-  Control_QuitInd
-} ControlMessage_t;
+  Control_QuitInd,
+  Command_SpeedInd,
+  Command_SteerInd
+} TestMessage_t;
 
 
 // Run as console
@@ -55,24 +57,27 @@ int main ()
 	// 2. Control:PauseInd
 	// 3. Control:RestartInd
 	// 4. Control:QuitInd
+	// 5. Command:SpeedInd
+	// 6. Command:SteerInd
 
-	// 1.
+
+	// 1. Idle
 	Keystroke(&demoDevice.CommandHandler, Control_StartInd);
 	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
-	// 2.
+	// 2. Running
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
 	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
-	// 3.
+	// 3. Paused
 	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
 	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
-	// 4.
-	Keystroke(&demoDevice.CommandHandler, Control_PauseInd);
+	// 4. Running
+	Keystroke(&demoDevice.CommandHandler, Command_SpeedInd);
 	ProcessMessage((Device_t*)&demoDevice);
 	ProcessMessage((Device_t*)&demoDevice);
 
