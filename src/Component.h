@@ -42,7 +42,7 @@ typedef bool (*EvaluationFunction_t)(Component_t*);
 typedef struct
 {
 	char* pName;
-	EvaluationFunction_t pEvaluation;
+	EvaluationFunction_t pEvaluation; // Used if state is a choicepoint, also as indicator.
 } State_t;
 
 // -------------------------------------------------------------------------------------------------

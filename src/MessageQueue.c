@@ -52,7 +52,8 @@ void* PrepareMessage(MessageQueue_t* pMsgQueue, char* pMsgId, int msgSize)
 		pMsgQueue->pWrite = pMsgQueue->pMessage;
 
 		// Read pointer
-###
+		if( pMsgQueue->pRead == pMsgQueue->pWrapAround )
+		  pMsgQueue->pRead = pMsgQueue->pMessage;
 
 	}
 	pMsgQueue->pWrite->pMsgId = pMsgId;
@@ -71,7 +72,8 @@ void ShiftWritePointer(MessageQueue_t* pMsgQueue)
 {
 	pMsgQueue->pWrite = (void *)((address_t)&pMsgQueue->pWrite->pMsgId + pMsgQueue->pWrite->msgSize);
 	if( (void *)pMsgQueue->pWrite > (void *)pMsgQueue->pWrapAround )
-		pMsgQueue->pWrapAround = pMsgQueue->pWrite;
+		// 'Reset' the wrap-around pointer.
+		pMsgQueue->pWrapAround = pMsgQueue->pEnd_of_queue;
 	// If the write pointer is now pointing at the end of the queue.
 	if( pMsgQueue->pWrite == pMsgQueue->pEnd_of_queue )
 		pMsgQueue->pWrite = pMsgQueue->pMessage;
