@@ -10,9 +10,11 @@ void DemoDevice_init(DemoDevice_t* pDevice)
 {
 	//	Initialize the message queues.
 	pDevice->numMsgQueues = NUM_MSG_QUEUES;
+
 	INIT_MSG_QUEUE(0,10);
 	INIT_MSG_QUEUE(1,4);
 	INIT_MSG_QUEUE(2,4);
+
 	pDevice->pMsgQueue = pDevice->msgQueue;
 
 	//	Initialize the components (supply index of message queue).
@@ -26,5 +28,4 @@ void DemoDevice_init(DemoDevice_t* pDevice)
 
 	// Connect components to the Timer Handler.
 	CONNECT_TIMER(Controller,TimerHandler);
-
 }

@@ -17,10 +17,11 @@ void TimerHandler_init(COMPONENT_TYPE* pComp, MessageQueue_t* pMsgQueue)
 
 	// Initialize state variables.
 
-	for( int i=0; i<MAX_TIMERS; i++)
+	int i;
+	for(i=0; i<MAX_TIMERS; i++)
 	{
-		pComp->timeout[MAX_TIMERS].timeout = 0;
-		pComp->timeout[MAX_TIMERS].timerId = 0;
+		pComp->timeout[i].timeout = 0;
+		pComp->timeout[i].timerId = 0;
 	}
 
 	pComp->pNextTimeout = pComp->timeout;
@@ -109,7 +110,8 @@ uint32_t InformIn(Component_t *pComp, uint32_t interval )
 	uint64_t timeout = pTimerHandler->currentTime+interval;
 
 	/*
-	 * Note: all the code here can be interrupted by the timer ISR _TimerTick(). This needs to be taken into account.
+	 * Note: all the code here can be interrupted by the timer ISR _TimerTick().
+	 * This needs to be taken into account.
 	 * The ISR will shift the pTimerHandler->pNextTimeout and set the timerId and timeout to 0.
 	 */
 

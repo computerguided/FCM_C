@@ -10,11 +10,13 @@
 // Macro: TRANSITION_FUNCTION(<state>,<interface>,<message>)
 // -------------------------------------------------------------------------------------------------
 
+#undef NUM_TRANSITIONS
+#define NUM_TRANSITIONS 1
+
 TRANSITION_FUNCTION(1, Idle, Control, StartInd, Idle)
 {}
 
-#undef NUM_TRANSITIONS
-#define NUM_TRANSITIONS 1
+
 
 
 // -------------------------------------------------------------------------------------------------

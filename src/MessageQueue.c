@@ -20,8 +20,6 @@
 // -------------------------------------------------------------------------------------------------
 void MessageQueue_init(MessageQueue_t* pMsgQueue, int queueSize )
 {
-  pMsgQueue->pMessage = malloc(sizeof(Message_t)*queueSize);
-
   pMsgQueue->pWrite = pMsgQueue->pMessage;
   pMsgQueue->pRead = pMsgQueue->pWrite;
   pMsgQueue->pWrapAround = &pMsgQueue->pMessage[queueSize-1]+1;

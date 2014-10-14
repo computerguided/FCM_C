@@ -65,8 +65,11 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		pComp->i.pComponent = pComp
 
 #define INIT_STT(x,s) \
+		static SttElement_t sttElements[x*5]; \
+		SetSttElements(sttElements,x*5); \
+		pComp->pTransitions = sttElements; \
 		SET_TRANSITIONS(x); \
-		SetNextStates(pComp->pTransitions); \
+		SetNextStates(pComp->pTransitions,x*5); \
 		SetFirstState((Component_t*)pComp,&pComp->s)
 
 #define SET_MSG_QUEUE(m) \
@@ -80,9 +83,10 @@ void SetFirstState(Component_t* pComp, State_t* pState);
 		static void _##s##_##i##_##m##_wrapper(Component_t* pComp); \
 		static void _trans_##x(COMPONENT_TYPE* pComp) \
 		{ \
-			pComp->pTransitions = SetTransition( \
+			SetTransition( \
 					x, \
 					pComp->pTransitions, \
+					NUM_TRANSITIONS*5, \
 					&pComp->s, \
 					&pComp->i, \
 					pComp->i.p##m##_id, \

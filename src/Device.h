@@ -29,6 +29,8 @@ bool ProcessMessage(Device_t *pDevice);
 // -------------------------------------------------------------------------------------------------
 
 #define INIT_MSG_QUEUE(i,s) \
+		static Message_t _messages_belonging_to_message_queue_##i[s]; \
+		pDevice->msgQueue[i].pMessage = _messages_belonging_to_message_queue_##i; \
 		MessageQueue_init(&pDevice->msgQueue[i], s)
 
 #define INIT_COMPONENT(c,x) \

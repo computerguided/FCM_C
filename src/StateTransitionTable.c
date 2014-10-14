@@ -2,8 +2,42 @@
 // StateTransition.c
 // -------------------------------------------------------------------------------------------------
 
+#include <assert.h>
 #include "StateTransitionTable.h"
-#include <stdlib.h> // For malloc()
+
+
+// -------------------------------------------------------------------------------------------------
+void SetSttElements(SttElement_t* pTable, int numElements)
+{
+	int i;
+	for(i=0;i<numElements;i++)
+	{
+		pTable[i].pNextElement = NULL;
+		pTable[i].pReference = NULL;
+	}
+}
+
+
+// -------------------------------------------------------------------------------------------------
+SttElement_t* GetEmptyElement(SttElement_t* pTable, int bufferSize, int numElements)
+{
+	SttElement_t* pElement = NULL;
+
+	int i;
+	for( i=0; i<numElements; i++)
+	{
+		if( pTable[i].pNextElement == NULL && pTable[i].pReference == NULL)
+		{
+			pElement = &pTable[i];
+			break;
+		}
+	}
+
+	assert(pElement != NULL && numElements-i >= bufferSize);
+	return pElement;
+}
+
+
 
 // -------------------------------------------------------------------------------------------------
 // CreateTransition
@@ -12,6 +46,8 @@
 // Returns the pointer to the first SttElement_t of the created transition.
 // -------------------------------------------------------------------------------------------------
 // - level : whether the first element is a state, interface or message.
+// - pTable : pointer to the table of SttElement_t elements.
+// - numElements : number of elements in the pTable.
 // - pState: pointer to the state of the transition.
 // - pInterface: pointer to the interface of the transition.
 // - pMsg: pointer to the message of the transition.
@@ -22,6 +58,8 @@
 SttElement_t* CreateTransition
 (
 		SttReferenceType_t level,
+		SttElement_t* pTable,
+		int   numElements,
 		void* pState,
 		void* pInterface,
 		void* pMsg,
@@ -29,10 +67,10 @@ SttElement_t* CreateTransition
 		void* pNextState
 )
 {
-	int numElements = TRANSITION_SIZE-(int)level;
+	int numEntries = TRANSITION_SIZE-(int)level;
 
 	// Create the necessary elements for the new transition.
-	SttElement_t* newSttEntry = malloc(sizeof(SttElement_t)*numElements);
+	SttElement_t* newSttEntry = GetEmptyElement(pTable, numEntries, numElements);
 
 	// -- Set the reference depending on what must be set --
 
@@ -41,7 +79,6 @@ SttElement_t* CreateTransition
 	if( level <= Stt_Message ) 		newSttEntry[Stt_Message-level].pReference = pMsg;
 									newSttEntry[Stt_TransitionFunction-level].pReference = pTransFunc;
 
-	for(int i=0; i<numElements; i++) newSttEntry[i].pNextElement = NULL;
 	newSttEntry[Stt_TransitionFunction-level].pNextElement = pNextState; // Temp.
 
 	return newSttEntry;
@@ -55,17 +92,20 @@ SttElement_t* CreateTransition
 // Returns the pointer to the first transition. This is done to be able to allocate the first.
 // -------------------------------------------------------------------------------------------------
 // - index : index of the transition (starts at 1).
-// - pTable: pointer to the first transition, but uninitialized at the first call.
+// - pTable: pointer to the first transition.
+// - numElements : number of elements in the pTable.
 // - pState: pointer to the state of the transition.
 // - pInterface: pointer to the interface of the transition.
 // - pMsg: pointer to the message of the transition.
 // - pTransFunc: pointer to the transition-function of the transition.
 // - pNextState: pointer to the next state of the transition.
 // -------------------------------------------------------------------------------------------------
+
 SttElement_t* SetTransition
 (
 		int index,
 		SttElement_t* pTable,
+		int   numElements,
 		void* pState,
 		void* pInterface,
 		void* pMsg,
@@ -74,7 +114,8 @@ SttElement_t* SetTransition
 )
 {
 	// If this is the first transition.
-	if( index == 1 ) return CreateTransition(Stt_State, pState, pInterface, pMsg, pTransFunc, pNextState );
+	if( index == 1 ) return
+			CreateTransition(Stt_State, pTable, numElements, pState, pInterface, pMsg, pTransFunc, pNextState );
 
 	SttElement_t* pStateElement = pTable;
 	SttElement_t* pInterfaceElement;
@@ -112,7 +153,7 @@ SttElement_t* SetTransition
 						{
 							// This was the last message in this state/interface and therefore message
 							// not found, which is how it should be at this point.
-							pMsgElement->pNextElement = CreateTransition(Stt_Message, pState, pInterface, pMsg, pTransFunc, pNextState );
+							pMsgElement->pNextElement = CreateTransition(Stt_Message, pTable, numElements, pState, pInterface, pMsg, pTransFunc, pNextState );
 							return pTable;
 						}
 
@@ -126,7 +167,7 @@ SttElement_t* SetTransition
 				if( pInterfaceElement->pNextElement == NULL )
 				{
 					// This was the last interface in this state and therefore interface not found.
-					pInterfaceElement->pNextElement = CreateTransition(Stt_Interface, pState, pInterface, pMsg, pTransFunc, pNextState );
+					pInterfaceElement->pNextElement = CreateTransition(Stt_Interface, pTable, numElements, pState, pInterface, pMsg, pTransFunc, pNextState );
 					return pTable;
 				}
 
@@ -140,7 +181,7 @@ SttElement_t* SetTransition
 		if( pStateElement->pNextElement == NULL )
 		{
 			// This was the last state and therefore state not found.
-			pStateElement->pNextElement = CreateTransition(Stt_State, pState, pInterface, pMsg, pTransFunc, pNextState );
+			pStateElement->pNextElement = CreateTransition(Stt_State, pTable, numElements, pState, pInterface, pMsg, pTransFunc, pNextState );
 			return pTable;
 		}
 
@@ -157,8 +198,9 @@ SttElement_t* SetTransition
 // dead-states. This must be corrected for those next-states that are not dead-states.
 // -------------------------------------------------------------------------------------------------
 // - pTable: pointer to the (first element) of the STT.
+// - numelements : number of elements in the pTable.
 // -------------------------------------------------------------------------------------------------
-void SetNextStates(SttElement_t* pTable )
+void SetNextStates(SttElement_t* pTable, int numElements )
 {
 	SttElement_t* pTransFuncElement = pTable;
 	SttElement_t* pStateElement = pTable;
@@ -204,7 +246,7 @@ void SetNextStates(SttElement_t* pTable )
 				if( pStateElement == NULL )
 				{
 					// State not found.
-					SttElement_t* pNextState = malloc(sizeof(SttElement_t));
+					SttElement_t* pNextState = GetEmptyElement(pTable, 1, numElements);
 					pNextState->pReference = pTransFuncElement->pNextElement;
 					pNextState->pNextElement = NULL;
 					pTransFuncElement->pNextElement = pNextState;

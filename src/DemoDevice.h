@@ -12,6 +12,7 @@
 #include "TimerHandler.h"
 
 #define NUM_MSG_QUEUES 3
+
 typedef struct
 {
 	DEVICE_BASETYPE_FIELDS;

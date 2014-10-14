@@ -11,6 +11,9 @@
 // Macro: TRANSITION_FUNCTION(<state>,<interface>,<message>)
 // -------------------------------------------------------------------------------------------------
 
+#undef NUM_TRANSITIONS
+#define NUM_TRANSITIONS 11
+
 TRANSITION_FUNCTION(1,	Idle,		Control,	StartInd, 	Running)
 {
 }
@@ -44,9 +47,6 @@ TRANSITION_FUNCTION(10,	GameOver,	Control,	QuitInd,	Idle)
 TRANSITION_FUNCTION(11,	GameOver,	Control,	RestartInd,	Running)
 {}
 
-
-#undef NUM_TRANSITIONS
-#define NUM_TRANSITIONS 11
 
 // -------------------------------------------------------------------------------------------------
 // Evaluation functions
